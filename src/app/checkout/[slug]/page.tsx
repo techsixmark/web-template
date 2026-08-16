@@ -14,11 +14,11 @@ export default async function CheckoutPage({
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-12">
-      <h1 className="text-2xl font-bold text-zinc-900">Xác nhận đơn hàng</h1>
+      <h1 className="text-2xl font-bold text-ink">Xác nhận đơn hàng</h1>
 
-      <div className="mt-4 rounded-xl border border-zinc-200 bg-white p-4">
-        <p className="font-medium text-zinc-900">{product.name}</p>
-        <p className="mt-1 text-lg font-semibold text-indigo-600">
+      <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+        <p className="font-medium text-ink">{product.name}</p>
+        <p className="mt-1 text-lg font-bold text-ink">
           {formatVnd(product.price)}
         </p>
       </div>

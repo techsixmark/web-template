@@ -53,6 +53,32 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   "fitness-health": "Sức khỏe & Thể hình",
 };
 
+export const CATEGORY_ICONS: Record<ProductCategory, string> = {
+  "personal-finance": "💰",
+  "accounting-b2b": "🧾",
+  "project-management": "📊",
+  "hr-operations": "🗂️",
+  "marketing-sales": "📈",
+  "real-estate": "🏠",
+  ecommerce: "🛒",
+  "event-wedding": "💍",
+  "education-coaching": "🎓",
+  "fitness-health": "🏋️",
+};
+
+export const CATEGORY_ORDER: ProductCategory[] = [
+  "personal-finance",
+  "accounting-b2b",
+  "project-management",
+  "hr-operations",
+  "marketing-sales",
+  "real-estate",
+  "ecommerce",
+  "event-wedding",
+  "education-coaching",
+  "fitness-health",
+];
+
 export function formatVnd(amount: number): string {
   return amount.toLocaleString("vi-VN") + " đ";
 }

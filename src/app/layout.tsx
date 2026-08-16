@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TemplateShop — Template Canva, Figma, PowerPoint, Word, Excel",
+  title: "TemplateShop — Template Google Sheets & Excel theo 10 nhóm ngành",
   description:
-    "Shop bán template thiết kế và văn phòng cho thị trường Việt Nam. Thanh toán chuyển khoản qua VietQR, giao file tự động qua email.",
+    "Template quản trị Google Sheets/Excel cho tài chính cá nhân, kế toán, dự án, nhân sự, sales, bất động sản và nhiều ngành khác. Thanh toán VietQR, giao file tự động qua email.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="vi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-50">
+      <body className="min-h-full flex flex-col bg-white">
         <Header />
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />

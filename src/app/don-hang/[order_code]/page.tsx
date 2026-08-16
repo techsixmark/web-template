@@ -31,12 +31,12 @@ export default async function OrderPage({
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-12 text-center">
-      <h1 className="text-2xl font-bold text-zinc-900">Thanh toán đơn hàng</h1>
-      <p className="mt-1 text-sm text-zinc-500">Mã đơn: {order.order_code}</p>
+      <h1 className="text-2xl font-bold text-ink">Thanh toán đơn hàng</h1>
+      <p className="mt-1 text-sm text-slate-500">Mã đơn: {order.order_code}</p>
 
-      <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-6">
-        <p className="font-medium text-zinc-900">{productName}</p>
-        <p className="mt-1 text-lg font-semibold text-indigo-600">
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+        <p className="font-medium text-ink">{productName}</p>
+        <p className="mt-1 text-lg font-bold text-ink">
           {formatVnd(order.amount)}
         </p>
 
@@ -46,9 +46,9 @@ export default async function OrderPage({
             <img
               src={qrUrl}
               alt="Mã QR chuyển khoản VietQR"
-              className="mx-auto mt-4 w-full max-w-xs rounded-lg border border-zinc-200"
+              className="mx-auto mt-4 w-full max-w-xs rounded-lg border border-slate-200"
             />
-            <p className="mt-3 text-sm text-zinc-600">
+            <p className="mt-3 text-sm text-slate-600">
               Quét mã bằng app ngân hàng, giữ nguyên{" "}
               <strong>nội dung chuyển khoản: {order.order_code}</strong> để hệ
               thống tự động xác nhận.

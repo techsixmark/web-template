@@ -36,19 +36,19 @@ export function CheckoutForm({ slug }: { slug: string }) {
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
       <div>
-        <label className="block text-sm font-medium text-zinc-700">
+        <label className="block text-sm font-medium text-slate-700">
           Họ và tên
         </label>
         <input
           required
           value={customerName}
           onChange={(e) => setCustomerName(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           placeholder="Nguyễn Văn A"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-zinc-700">
+        <label className="block text-sm font-medium text-slate-700">
           Email nhận file
         </label>
         <input
@@ -56,7 +56,7 @@ export function CheckoutForm({ slug }: { slug: string }) {
           type="email"
           value={customerEmail}
           onChange={(e) => setCustomerEmail(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           placeholder="ban@email.com"
         />
       </div>
@@ -66,7 +66,7 @@ export function CheckoutForm({ slug }: { slug: string }) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+        className="w-full rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60"
       >
         {loading ? "Đang tạo đơn..." : "Tạo mã thanh toán VietQR"}
       </button>
