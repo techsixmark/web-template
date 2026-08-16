@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import { formatVnd } from "@/lib/types";
+import { DiscountCodeInput } from "@/components/DiscountCodeInput";
 
 export function CartPageClient() {
   const { items, removeItem, total, clear } = useCart();
@@ -14,6 +15,7 @@ export function CartPageClient() {
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [discount, setDiscount] = useState<{ code: string; discountAmount: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +32,7 @@ export function CartPageClient() {
           customerName,
           customerEmail,
           affiliateCode,
+          discountCode: discount?.code,
         }),
       });
       const data = await res.json();
@@ -63,6 +66,8 @@ export function CartPageClient() {
     );
   }
 
+  const finalTotal = total - (discount?.discountAmount ?? 0);
+
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-12">
       <h1 className="text-2xl font-bold text-ink">Giỏ hàng ({items.length} sản phẩm)</h1>
@@ -91,9 +96,28 @@ export function CartPageClient() {
         ))}
       </ul>
 
-      <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-        <span className="font-medium text-ink">Tổng cộng</span>
-        <span className="text-lg font-bold text-ink">{formatVnd(total)}</span>
+      <div className="mt-4">
+        <DiscountCodeInput
+          target={{ kind: "cart", slugs: items.map((i) => i.slug) }}
+          onApplied={setDiscount}
+        />
+      </div>
+
+      <div className="mt-4 space-y-1 rounded-xl bg-slate-50 px-4 py-3">
+        <div className="flex items-center justify-between text-sm text-slate-600">
+          <span>Tạm tính</span>
+          <span>{formatVnd(total)}</span>
+        </div>
+        {discount && (
+          <div className="flex items-center justify-between text-sm text-emerald-700">
+            <span>Giảm giá ({discount.code})</span>
+            <span>-{formatVnd(discount.discountAmount)}</span>
+          </div>
+        )}
+        <div className="flex items-center justify-between border-t border-slate-200 pt-1.5">
+          <span className="font-medium text-ink">Tổng cộng</span>
+          <span className="text-lg font-bold text-ink">{formatVnd(finalTotal)}</span>
+        </div>
       </div>
 
       <form onSubmit={handleCheckout} className="mt-8 space-y-4">

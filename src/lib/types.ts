@@ -28,6 +28,8 @@ export interface Product {
   related_product_id?: string | null;
   /** Link video hướng dẫn (YouTube/Vimeo/mp4 trực tiếp). */
   video_url?: string | null;
+  /** Giá gốc trước khuyến mãi — hiển thị gạch ngang khi lớn hơn `price`. */
+  compare_at_price?: number | null;
 }
 
 export interface Bundle {
@@ -41,6 +43,7 @@ export interface Bundle {
   is_active: boolean;
   monetization_strategy?: string | null;
   created_at: string;
+  compare_at_price?: number | null;
 }
 
 export type OrderStatus = "pending" | "paid" | "expired" | "cancelled";
@@ -55,6 +58,8 @@ export interface Order {
   amount: number;
   status: OrderStatus;
   affiliate_code: string | null;
+  discount_code?: string | null;
+  discount_amount?: number;
   created_at: string;
   paid_at: string | null;
 }

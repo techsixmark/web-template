@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { DiscountCodeInput } from "@/components/DiscountCodeInput";
 
 export function CheckoutForm({
   type,
@@ -17,6 +18,7 @@ export function CheckoutForm({
   const router = useRouter();
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [discount, setDiscount] = useState<{ code: string; discountAmount: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +30,14 @@ export function CheckoutForm({
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, slug, customerName, customerEmail, affiliateCode }),
+        body: JSON.stringify({
+          type,
+          slug,
+          customerName,
+          customerEmail,
+          affiliateCode,
+          discountCode: discount?.code,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -70,6 +79,18 @@ export function CheckoutForm({
           placeholder="ban@email.com"
         />
       </div>
+
+      {!isFree && (
+        <div>
+          <label className="block text-sm font-medium text-slate-700">Mã giảm giá</label>
+          <div className="mt-1">
+            <DiscountCodeInput
+              target={{ kind: type, slug }}
+              onApplied={setDiscount}
+            />
+          </div>
+        </div>
+      )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

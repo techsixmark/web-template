@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createServiceSupabaseClient } from "@/lib/supabase";
 import { generateOrderCode } from "@/lib/sepay";
 import { fulfillOrder } from "@/lib/fulfillment";
+import { validateDiscountCode, incrementDiscountUsage } from "@/lib/discount";
 
 const CreateOrderSchema = z.object({
   type: z.enum(["product", "bundle"]).default("product"),
@@ -10,6 +11,7 @@ const CreateOrderSchema = z.object({
   customerName: z.string().min(2, "Vui lòng nhập họ tên"),
   customerEmail: z.string().email("Email không hợp lệ"),
   affiliateCode: z.string().trim().optional(),
+  discountCode: z.string().trim().optional(),
 });
 
 export async function POST(req: Request) {
@@ -21,7 +23,7 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
-  const { type, slug, customerName, customerEmail, affiliateCode } = parsed.data;
+  const { type, slug, customerName, customerEmail, affiliateCode, discountCode } = parsed.data;
 
   let supabase: ReturnType<typeof createServiceSupabaseClient>;
   try {
@@ -35,7 +37,7 @@ export async function POST(req: Request) {
   }
 
   // Xác định sản phẩm/combo + giá tiền
-  let amount: number;
+  let subtotal: number;
   let productId: string | null = null;
   let bundleId: string | null = null;
 
@@ -48,7 +50,7 @@ export async function POST(req: Request) {
     if (error || !bundle || !bundle.is_active) {
       return NextResponse.json({ error: "Combo không tồn tại hoặc đã ngừng bán" }, { status: 404 });
     }
-    amount = bundle.price;
+    subtotal = bundle.price;
     bundleId = bundle.id;
   } else {
     const { data: product, error } = await supabase
@@ -59,9 +61,22 @@ export async function POST(req: Request) {
     if (error || !product || !product.is_active) {
       return NextResponse.json({ error: "Sản phẩm không tồn tại hoặc đã ngừng bán" }, { status: 404 });
     }
-    amount = product.price;
+    subtotal = product.price;
     productId = product.id;
   }
+
+  // Ap dung ma giam gia (neu co) - sai/het han/het luot thi tra loi ngay, khong tao don
+  let validDiscountCode: string | null = null;
+  let discountAmount = 0;
+  if (discountCode) {
+    const result = await validateDiscountCode(supabase, discountCode, subtotal);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+    validDiscountCode = result.code;
+    discountAmount = result.discountAmount;
+  }
+  const amount = subtotal - discountAmount;
 
   // Validate ma affiliate (neu co) - sai ma thi bo qua, khong chan don hang
   let validAffiliateCode: string | null = null;
@@ -106,6 +121,8 @@ export async function POST(req: Request) {
       customer_name: customerName,
       customer_email: customerEmail,
       amount,
+      discount_code: validDiscountCode,
+      discount_amount: discountAmount,
       affiliate_code: validAffiliateCode,
       status: isFree ? "paid" : "pending",
       paid_at: isFree ? new Date().toISOString() : null,
@@ -118,6 +135,10 @@ export async function POST(req: Request) {
       { error: "Không tạo được đơn hàng, vui lòng thử lại" },
       { status: 500 }
     );
+  }
+
+  if (validDiscountCode) {
+    await incrementDiscountUsage(supabase, validDiscountCode);
   }
 
   // San pham/combo mien phi -> hoan tat va gui email ngay, khong can cho thanh toan

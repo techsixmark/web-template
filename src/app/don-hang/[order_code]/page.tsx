@@ -15,7 +15,7 @@ export default async function OrderPage({
   const { data: order } = await supabase
     .from("orders")
     .select(
-      "id, order_code, amount, status, customer_email, product_id, bundle_id, products(name), bundles(name)"
+      "id, order_code, amount, status, customer_email, product_id, bundle_id, discount_code, discount_amount, products(name), bundles(name)"
     )
     .eq("order_code", order_code)
     .maybeSingle();
@@ -64,7 +64,12 @@ export default async function OrderPage({
         ) : (
           <p className="font-medium text-ink">{itemName}</p>
         )}
-        <p className="mt-2 text-lg font-bold text-ink">
+        {order.discount_amount > 0 && (
+          <p className="mt-2 text-sm text-emerald-700">
+            Đã giảm {formatVnd(order.discount_amount)} (mã {order.discount_code})
+          </p>
+        )}
+        <p className="mt-1 text-lg font-bold text-ink">
           {isFree ? "Miễn phí" : formatVnd(order.amount)}
         </p>
 

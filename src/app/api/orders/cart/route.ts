@@ -3,12 +3,14 @@ import { z } from "zod";
 import { createServiceSupabaseClient } from "@/lib/supabase";
 import { generateOrderCode } from "@/lib/sepay";
 import { fulfillOrder } from "@/lib/fulfillment";
+import { validateDiscountCode, incrementDiscountUsage } from "@/lib/discount";
 
 const CreateCartOrderSchema = z.object({
   items: z.array(z.object({ slug: z.string().min(1) })).min(1, "Giỏ hàng đang trống"),
   customerName: z.string().min(2, "Vui lòng nhập họ tên"),
   customerEmail: z.string().email("Email không hợp lệ"),
   affiliateCode: z.string().trim().optional(),
+  discountCode: z.string().trim().optional(),
 });
 
 export async function POST(req: Request) {
@@ -20,7 +22,7 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
-  const { items, customerName, customerEmail, affiliateCode } = parsed.data;
+  const { items, customerName, customerEmail, affiliateCode, discountCode } = parsed.data;
 
   let supabase: ReturnType<typeof createServiceSupabaseClient>;
   try {
@@ -52,7 +54,20 @@ export async function POST(req: Request) {
   }
 
   const validProducts = products!.filter((p) => slugs.includes(p.slug));
-  const amount = validProducts.reduce((sum, p) => sum + p.price, 0);
+  const subtotal = validProducts.reduce((sum, p) => sum + p.price, 0);
+
+  // Ap dung ma giam gia (neu co) - sai/het han/het luot thi tra loi ngay, khong tao don
+  let validDiscountCode: string | null = null;
+  let discountAmount = 0;
+  if (discountCode) {
+    const result = await validateDiscountCode(supabase, discountCode, subtotal);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+    validDiscountCode = result.code;
+    discountAmount = result.discountAmount;
+  }
+  const amount = subtotal - discountAmount;
 
   let validAffiliateCode: string | null = null;
   if (affiliateCode) {
@@ -95,6 +110,8 @@ export async function POST(req: Request) {
       customer_name: customerName,
       customer_email: customerEmail,
       amount,
+      discount_code: validDiscountCode,
+      discount_amount: discountAmount,
       affiliate_code: validAffiliateCode,
       status: isFree ? "paid" : "pending",
       paid_at: isFree ? new Date().toISOString() : null,
@@ -118,6 +135,10 @@ export async function POST(req: Request) {
       { error: "Không lưu được danh sách sản phẩm trong đơn, vui lòng thử lại" },
       { status: 500 }
     );
+  }
+
+  if (validDiscountCode) {
+    await incrementDiscountUsage(supabase, validDiscountCode);
   }
 
   if (isFree) {

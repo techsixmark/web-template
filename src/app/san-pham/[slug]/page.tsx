@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CATEGORY_ICONS, CATEGORY_LABELS, formatVnd } from "@/lib/types";
+import { PriceTag } from "@/components/PriceTag";
 import { getProductBySlug, getProductById } from "@/lib/products";
 import { getBundlesForProduct } from "@/lib/bundles";
 import { ImageGallery } from "@/components/ImageGallery";
@@ -56,9 +57,9 @@ export default async function ProductDetailPage({
             )}
           </div>
           <h1 className="mt-3 text-3xl font-bold text-ink">{product.name}</h1>
-          <p className="mt-4 text-2xl font-bold text-ink">
-            {isFree ? "0 đ" : formatVnd(product.price)}
-          </p>
+          <div className="mt-4">
+            <PriceTag price={product.price} compareAtPrice={product.compare_at_price} size="lg" />
+          </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
