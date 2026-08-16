@@ -20,6 +20,12 @@ export function Header() {
             Tất cả sản phẩm
           </Link>
           <Link
+            href="/combo"
+            className="hidden text-sm font-medium text-slate-300 transition hover:text-white sm:block"
+          >
+            Combo tiết kiệm
+          </Link>
+          <Link
             href="/san-pham"
             className="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-brand-50"
           >

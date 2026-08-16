@@ -14,15 +14,18 @@ export default async function OrderPage({
 
   const { data: order } = await supabase
     .from("orders")
-    .select("order_code, amount, status, customer_email, products(name)")
+    .select(
+      "order_code, amount, status, customer_email, product_id, bundle_id, products(name), bundles(name)"
+    )
     .eq("order_code", order_code)
     .maybeSingle();
 
   if (!order) notFound();
 
-  const productName = Array.isArray(order.products)
-    ? order.products[0]?.name
-    : (order.products as unknown as { name: string } | null)?.name;
+  const productInfo = Array.isArray(order.products) ? order.products[0] : order.products;
+  const bundleInfo = Array.isArray(order.bundles) ? order.bundles[0] : order.bundles;
+  const itemName = order.bundle_id ? bundleInfo?.name : productInfo?.name;
+  const isFree = order.amount === 0;
 
   const qrUrl = getVietQrImageUrl({
     amount: order.amount,
@@ -31,16 +34,18 @@ export default async function OrderPage({
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-12 text-center">
-      <h1 className="text-2xl font-bold text-ink">Thanh toán đơn hàng</h1>
+      <h1 className="text-2xl font-bold text-ink">
+        {isFree ? "Đơn đăng ký nhận file" : "Thanh toán đơn hàng"}
+      </h1>
       <p className="mt-1 text-sm text-slate-500">Mã đơn: {order.order_code}</p>
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-        <p className="font-medium text-ink">{productName}</p>
+        <p className="font-medium text-ink">{itemName}</p>
         <p className="mt-1 text-lg font-bold text-ink">
-          {formatVnd(order.amount)}
+          {isFree ? "Miễn phí" : formatVnd(order.amount)}
         </p>
 
-        {order.status === "pending" && (
+        {order.status === "pending" && !isFree && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

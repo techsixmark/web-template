@@ -3,7 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function CheckoutForm({ slug }: { slug: string }) {
+export function CheckoutForm({
+  type,
+  slug,
+  affiliateCode,
+  isFree,
+}: {
+  type: "product" | "bundle";
+  slug: string;
+  affiliateCode?: string;
+  isFree?: boolean;
+}) {
   const router = useRouter();
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -18,7 +28,7 @@ export function CheckoutForm({ slug }: { slug: string }) {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, customerName, customerEmail }),
+        body: JSON.stringify({ type, slug, customerName, customerEmail, affiliateCode }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -68,7 +78,11 @@ export function CheckoutForm({ slug }: { slug: string }) {
         disabled={loading}
         className="w-full rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60"
       >
-        {loading ? "Đang tạo đơn..." : "Tạo mã thanh toán VietQR"}
+        {loading
+          ? "Đang xử lý..."
+          : isFree
+            ? "Nhận file miễn phí"
+            : "Tạo mã thanh toán VietQR"}
       </button>
     </form>
   );

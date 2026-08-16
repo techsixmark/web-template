@@ -12,7 +12,7 @@ export async function GET(
 
   const { data: downloadToken } = await supabase
     .from("download_tokens")
-    .select("id, order_id, expires_at, download_count, orders(products(file_path, name))")
+    .select("id, expires_at, download_count, products(file_path)")
     .eq("token", token)
     .maybeSingle();
 
@@ -26,12 +26,9 @@ export async function GET(
     );
   }
 
-  const orderInfo = Array.isArray(downloadToken.orders)
-    ? downloadToken.orders[0]
-    : downloadToken.orders;
-  const productInfo = Array.isArray(orderInfo?.products)
-    ? orderInfo.products[0]
-    : orderInfo?.products;
+  const productInfo = Array.isArray(downloadToken.products)
+    ? downloadToken.products[0]
+    : downloadToken.products;
   const filePath = productInfo?.file_path;
 
   if (!filePath) {

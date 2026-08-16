@@ -31,7 +31,13 @@ export function ProductCard({ product }: { product: Product }) {
         </span>
         <h3 className="font-semibold leading-snug text-ink">{product.name}</h3>
         <div className="mt-auto flex items-center justify-between pt-2">
-          <p className="text-base font-bold text-ink">{formatVnd(product.price)}</p>
+          <p className="text-base font-bold text-ink">
+            {product.price === 0 ? (
+              <span className="text-emerald-600">Miễn phí</span>
+            ) : (
+              formatVnd(product.price)
+            )}
+          </p>
           <span className="text-sm font-medium text-brand-600 opacity-0 transition group-hover:opacity-100">
             Xem chi tiết →
           </span>

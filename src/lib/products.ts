@@ -31,3 +31,19 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
   return data as Product | null;
 }
+
+export async function getProductById(id: string): Promise<Product | null> {
+  const supabase = createBrowserSupabaseClient();
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getProductById error:", error.message);
+    return null;
+  }
+  return data as Product | null;
+}

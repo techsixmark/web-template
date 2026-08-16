@@ -24,6 +24,21 @@ export interface Product {
   updated_at: string;
   /** Ghi chú chiến lược khai thác (nội bộ, không hiển thị cho khách). */
   monetization_strategy?: string | null;
+  /** Sản phẩm liên quan — dùng cho cặp Basic (miễn phí) ↔ Pro (trả phí). */
+  related_product_id?: string | null;
+}
+
+export interface Bundle {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  price: number;
+  product_ids: string[];
+  preview_images: string[];
+  is_active: boolean;
+  monetization_strategy?: string | null;
+  created_at: string;
 }
 
 export type OrderStatus = "pending" | "paid" | "expired" | "cancelled";
@@ -31,11 +46,13 @@ export type OrderStatus = "pending" | "paid" | "expired" | "cancelled";
 export interface Order {
   id: string;
   order_code: string;
-  product_id: string;
+  product_id: string | null;
+  bundle_id: string | null;
   customer_name: string;
   customer_email: string;
   amount: number;
   status: OrderStatus;
+  affiliate_code: string | null;
   created_at: string;
   paid_at: string | null;
 }

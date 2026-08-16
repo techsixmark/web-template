@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceSupabaseClient } from "@/lib/supabase";
 import { extractOrderCode, verifySePayWebhook } from "@/lib/sepay";
-import { sendDownloadEmail } from "@/lib/email";
-
-const DOWNLOAD_LINK_TTL_HOURS = 48;
+import { fulfillOrder } from "@/lib/fulfillment";
 
 // Payload SePay gửi khi có giao dịch mới vào tài khoản đã đăng ký.
 // Tham khảo: https://sepay.vn/lap-trinh-cong-thanh-toan.html
@@ -30,7 +28,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, skipped: true });
   }
 
-  const supabase = createServiceSupabaseClient();
+  let supabase: ReturnType<typeof createServiceSupabaseClient>;
+  try {
+    supabase = createServiceSupabaseClient();
+  } catch (err) {
+    console.error("createServiceSupabaseClient error:", err);
+    return NextResponse.json({ error: "Máy chủ chưa được cấu hình đầy đủ" }, { status: 500 });
+  }
 
   // Chống xử lý trùng nếu SePay gửi lại webhook (referenceCode là duy nhất mỗi giao dịch ngân hàng)
   const { data: existingTx } = await supabase
@@ -49,7 +53,7 @@ export async function POST(req: Request) {
 
   const { data: order } = await supabase
     .from("orders")
-    .select("id, order_code, amount, status, customer_email, customer_name, products(name, file_path)")
+    .select("id, order_code, amount, status")
     .eq("order_code", orderCode)
     .maybeSingle();
 
@@ -75,39 +79,7 @@ export async function POST(req: Request) {
     .update({ status: "paid", paid_at: new Date().toISOString() })
     .eq("id", order.id);
 
-  const expiresAt = new Date(Date.now() + DOWNLOAD_LINK_TTL_HOURS * 60 * 60 * 1000);
-  const { data: downloadToken } = await supabase
-    .from("download_tokens")
-    .insert({ order_id: order.id, expires_at: expiresAt.toISOString() })
-    .select("token")
-    .single();
-
-  const productInfo = Array.isArray(order.products) ? order.products[0] : order.products;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const downloadUrl = `${siteUrl}/download/${downloadToken?.token}`;
-
-  try {
-    const emailResult = await sendDownloadEmail({
-      to: order.customer_email,
-      customerName: order.customer_name,
-      productName: productInfo?.name ?? "Template",
-      downloadUrl,
-      expiresAt,
-    });
-    await supabase.from("email_logs").insert({
-      order_id: order.id,
-      email_to: order.customer_email,
-      status: "sent",
-      provider_message_id: emailResult.data?.id ?? null,
-    });
-  } catch (err) {
-    await supabase.from("email_logs").insert({
-      order_id: order.id,
-      email_to: order.customer_email,
-      status: "failed",
-      error: err instanceof Error ? err.message : String(err),
-    });
-  }
+  await fulfillOrder(supabase, order.id);
 
   return NextResponse.json({ success: true, matched: true });
 }
