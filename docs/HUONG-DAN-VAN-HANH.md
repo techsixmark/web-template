@@ -88,7 +88,21 @@ Cách đơn giản nhất: upload ảnh lên Supabase Storage rồi copy link.
 
 ---
 
-## 5. Xem đơn hàng / doanh thu
+## 5. Duyệt đánh giá sản phẩm
+
+Khách gửi đánh giá (sao + nhận xét) ở trang chi tiết sản phẩm, nhưng đánh
+giá **chưa hiển thị công khai ngay** — cần bạn duyệt để tránh spam.
+
+1. Table Editor → bảng **`product_reviews`**
+2. Các đánh giá mới có cột `is_approved` = `false`
+3. Đọc nội dung ở cột `comment`, nếu hợp lệ thì bấm vào ô `is_approved` → đổi thành `true` → Enter
+4. Đánh giá sẽ hiện công khai trên trang sản phẩm trong ít phút (do cache ~60 giây)
+
+Muốn ẩn 1 đánh giá đã duyệt (vd phát hiện nội dung không phù hợp): đổi lại `is_approved` = `false`, hoặc xoá hẳn dòng đó.
+
+---
+
+## 6. Xem đơn hàng / doanh thu
 
 Table Editor → bảng **`orders`** — mỗi dòng là 1 đơn hàng, cột `status` = `paid` là đơn đã thanh toán thành công.
 

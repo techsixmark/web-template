@@ -11,6 +11,9 @@ import { getEmbedUrl, isDirectVideoFile } from "@/lib/video";
 import { ProductCard } from "@/components/ProductCard";
 import { TrustBadges } from "@/components/TrustBadges";
 import { ProductFaq } from "@/components/ProductFaq";
+import { StarRating } from "@/components/StarRating";
+import { ReviewForm } from "@/components/ReviewForm";
+import { getApprovedReviews } from "@/lib/reviews";
 import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 60;
@@ -68,6 +71,7 @@ export default async function ProductDetailPage({
     : null;
   const bundlesWithThisProduct = await getBundlesForProduct(product.id);
   const relatedProducts = await getRelatedProducts(product.category, product.id);
+  const { reviews, average, count: reviewCount } = await getApprovedReviews(product.id);
   const checkoutHref = ref
     ? `/checkout/${product.slug}?ref=${encodeURIComponent(ref)}`
     : `/checkout/${product.slug}`;
@@ -90,6 +94,15 @@ export default async function ProductDetailPage({
       availability: "https://schema.org/InStock",
       url: `${SITE_URL}/san-pham/${product.slug}`,
     },
+    ...(reviewCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: average.toFixed(1),
+            reviewCount,
+          },
+        }
+      : {}),
   };
 
   return (
@@ -119,6 +132,14 @@ export default async function ProductDetailPage({
             )}
           </div>
           <h1 className="mt-3 text-3xl font-bold text-ink">{product.name}</h1>
+          {reviewCount > 0 && (
+            <div className="mt-2 flex items-center gap-2">
+              <StarRating value={average} size="sm" />
+              <span className="text-sm text-slate-500">
+                {average.toFixed(1)} ({reviewCount} đánh giá)
+              </span>
+            </div>
+          )}
           <div className="mt-4">
             <PriceTag price={product.price} compareAtPrice={product.compare_at_price} size="lg" />
           </div>
@@ -217,6 +238,39 @@ export default async function ProductDetailPage({
         <h2 className="text-xl font-bold text-ink">Câu hỏi thường gặp</h2>
         <div className="mt-4">
           <ProductFaq />
+        </div>
+      </section>
+
+      {/* Đánh giá từ khách hàng */}
+      <section className="mt-14 max-w-3xl">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold text-ink">Đánh giá từ khách hàng</h2>
+          {reviewCount > 0 && (
+            <span className="flex items-center gap-1.5 text-sm text-slate-500">
+              <StarRating value={average} size="sm" />
+              {average.toFixed(1)} ({reviewCount})
+            </span>
+          )}
+        </div>
+
+        {reviews.length > 0 ? (
+          <ul className="mt-4 space-y-3">
+            {reviews.map((r) => (
+              <li key={r.id} className="rounded-xl border border-slate-200 bg-white p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-ink">{r.customer_name}</p>
+                  <StarRating value={r.rating} size="sm" />
+                </div>
+                {r.comment && <p className="mt-1.5 text-sm text-slate-600">{r.comment}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-4 text-sm text-slate-500">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+        )}
+
+        <div className="mt-6">
+          <ReviewForm productSlug={product.slug} />
         </div>
       </section>
 

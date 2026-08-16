@@ -28,4 +28,6 @@
 | 2026-08-17 | Thêm sản phẩm liên quan (cùng category), trust badges, FAQ vào trang chi tiết sản phẩm — không tạo review/rating/số lượng đã bán giả vì chưa có dữ liệu thật | Tăng độ tin cậy trang sản phẩm mà không bịa nội dung; review thật sẽ làm ở mục riêng (product_reviews) | Đã áp dụng |
 | 2026-08-17 | Viết `docs/HUONG-DAN-VAN-HANH.md` — hướng dẫn chủ shop tự đăng sản phẩm/sửa giá/thêm mã giảm giá/tạo combo qua Supabase Studio, không cần biết code | Chủ shop cần tự vận hành hàng ngày mà không phải nhờ Claude mỗi lần | Đã áp dụng |
 
+| 2026-08-17 | Đánh giá sản phẩm: bảng `product_reviews` (rating 1-5, comment, `is_approved` mặc định `false`); gửi đánh giá đi qua API `/api/reviews` (service role validate) chứ không cho anon insert trực tiếp; chỉ hiển thị đánh giá đã duyệt (`RLS` chỉ SELECT khi `is_approved = true`) | Tránh spam/nội dung xấu hiển thị công khai ngay lập tức; chủ shop tự duyệt qua Supabase Studio (xem `docs/HUONG-DAN-VAN-HANH.md`) | Đã áp dụng |
+
 > Cập nhật bảng này mỗi khi có quyết định kiến trúc/công nghệ/quy trình đáng chú ý — kể cả khi sau này đổi ý (thêm dòng mới, không xoá dòng cũ).
