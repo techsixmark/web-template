@@ -4,6 +4,7 @@ import { CATEGORY_ICONS, CATEGORY_LABELS, formatVnd } from "@/lib/types";
 import { getProductBySlug, getProductById } from "@/lib/products";
 import { getBundlesForProduct } from "@/lib/bundles";
 import { ImageGallery } from "@/components/ImageGallery";
+import { AddToCartButton } from "@/components/AddToCartButton";
 import { getEmbedUrl, isDirectVideoFile } from "@/lib/video";
 
 export const revalidate = 60;
@@ -59,12 +60,15 @@ export default async function ProductDetailPage({
             {isFree ? "0 đ" : formatVnd(product.price)}
           </p>
 
-          <Link
-            href={checkoutHref}
-            className="mt-6 inline-flex items-center rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700"
-          >
-            {isFree ? "Tải miễn phí" : "Mua ngay — thanh toán qua VietQR"}
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href={checkoutHref}
+              className="inline-flex items-center rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700"
+            >
+              {isFree ? "Tải miễn phí" : "Mua ngay — thanh toán qua VietQR"}
+            </Link>
+            {!isFree && <AddToCartButton product={product} />}
+          </div>
 
           <p className="mt-3 text-sm text-slate-500">
             {isFree

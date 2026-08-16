@@ -51,6 +51,20 @@ export async function fulfillOrder(
         filePath: productInfo.file_path,
       },
     ];
+  } else {
+    // Don gio hang: khong gan product_id/bundle_id, danh sach san pham
+    // nam trong bang order_items.
+    const { data: orderItems } = await supabase
+      .from("order_items")
+      .select("product_id, products(name, file_path)")
+      .eq("order_id", order.id);
+    items = (orderItems ?? [])
+      .map((oi) => {
+        const p = Array.isArray(oi.products) ? oi.products[0] : oi.products;
+        return p ? { productId: oi.product_id, productName: p.name, filePath: p.file_path } : null;
+      })
+      .filter((x): x is { productId: string; productName: string; filePath: string } => x !== null);
+    orderLabel = items.length > 1 ? `Giỏ hàng (${items.length} sản phẩm)` : (items[0]?.productName ?? "Đơn hàng");
   }
 
   if (items.length === 0) return;

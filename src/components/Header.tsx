@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CartLink } from "@/components/CartLink";
 
 export function Header() {
   return (
@@ -25,6 +26,7 @@ export function Header() {
           >
             Combo tiết kiệm
           </Link>
+          <CartLink />
           <Link
             href="/san-pham"
             className="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-brand-50"

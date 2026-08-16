@@ -15,7 +15,7 @@ export default async function OrderPage({
   const { data: order } = await supabase
     .from("orders")
     .select(
-      "order_code, amount, status, customer_email, product_id, bundle_id, products(name), bundles(name)"
+      "id, order_code, amount, status, customer_email, product_id, bundle_id, products(name), bundles(name)"
     )
     .eq("order_code", order_code)
     .maybeSingle();
@@ -24,8 +24,21 @@ export default async function OrderPage({
 
   const productInfo = Array.isArray(order.products) ? order.products[0] : order.products;
   const bundleInfo = Array.isArray(order.bundles) ? order.bundles[0] : order.bundles;
-  const itemName = order.bundle_id ? bundleInfo?.name : productInfo?.name;
   const isFree = order.amount === 0;
+
+  // Don gio hang: khong gan product_id/bundle_id -> lay danh sach tu order_items
+  let cartItemNames: string[] = [];
+  if (!order.product_id && !order.bundle_id) {
+    const { data: orderItems } = await supabase
+      .from("order_items")
+      .select("products(name)")
+      .eq("order_id", order.id);
+    cartItemNames = ((orderItems ?? []) as { products: { name: string } | { name: string }[] | null }[])
+      .map((oi) => (Array.isArray(oi.products) ? oi.products[0]?.name : oi.products?.name))
+      .filter((n): n is string => Boolean(n));
+  }
+
+  const itemName = order.bundle_id ? bundleInfo?.name : productInfo?.name;
 
   const qrUrl = getVietQrImageUrl({
     amount: order.amount,
@@ -40,8 +53,18 @@ export default async function OrderPage({
       <p className="mt-1 text-sm text-slate-500">Mã đơn: {order.order_code}</p>
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-        <p className="font-medium text-ink">{itemName}</p>
-        <p className="mt-1 text-lg font-bold text-ink">
+        {cartItemNames.length > 0 ? (
+          <ul className="space-y-1 text-left">
+            {cartItemNames.map((name, i) => (
+              <li key={i} className="text-sm font-medium text-ink">
+                • {name}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="font-medium text-ink">{itemName}</p>
+        )}
+        <p className="mt-2 text-lg font-bold text-ink">
           {isFree ? "Miễn phí" : formatVnd(order.amount)}
         </p>
 
