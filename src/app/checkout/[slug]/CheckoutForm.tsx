@@ -1,0 +1,75 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export function CheckoutForm({ slug }: { slug: string }) {
+  const router = useRouter();
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, customerName, customerEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Có lỗi xảy ra, vui lòng thử lại");
+        setLoading(false);
+        return;
+      }
+      router.push(`/don-hang/${data.orderCode}`);
+    } catch {
+      setError("Không kết nối được máy chủ, vui lòng thử lại");
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-zinc-700">
+          Họ và tên
+        </label>
+        <input
+          required
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          placeholder="Nguyễn Văn A"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-zinc-700">
+          Email nhận file
+        </label>
+        <input
+          required
+          type="email"
+          value={customerEmail}
+          onChange={(e) => setCustomerEmail(e.target.value)}
+          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          placeholder="ban@email.com"
+        />
+      </div>
+
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+      >
+        {loading ? "Đang tạo đơn..." : "Tạo mã thanh toán VietQR"}
+      </button>
+    </form>
+  );
+}
