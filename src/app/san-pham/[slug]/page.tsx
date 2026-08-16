@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { CATEGORY_ICONS, CATEGORY_LABELS, formatVnd } from "@/lib/types";
 import { getProductBySlug, getProductById } from "@/lib/products";
 import { getBundlesForProduct } from "@/lib/bundles";
+import { ImageGallery } from "@/components/ImageGallery";
+import { getEmbedUrl, isDirectVideoFile } from "@/lib/video";
 
 export const revalidate = 60;
 
@@ -18,7 +20,6 @@ export default async function ProductDetailPage({
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const cover = product.preview_images[0];
   const isFree = product.price === 0;
   const relatedProduct = product.related_product_id
     ? await getProductById(product.related_product_id)
@@ -28,6 +29,10 @@ export default async function ProductDetailPage({
     ? `/checkout/${product.slug}?ref=${encodeURIComponent(ref)}`
     : `/checkout/${product.slug}`;
 
+  const embedUrl = product.video_url ? getEmbedUrl(product.video_url) : null;
+  const isDirectVideo =
+    product.video_url && !embedUrl ? isDirectVideoFileSafe(product.video_url) : false;
+
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
       <Link href="/san-pham" className="text-sm font-medium text-slate-500 hover:text-brand-600">
@@ -35,18 +40,7 @@ export default async function ProductDetailPage({
       </Link>
 
       <div className="mt-4 grid grid-cols-1 gap-10 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-          <div className="aspect-[4/3] w-full bg-slate-100">
-            {cover ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={cover}
-                alt={product.name}
-                className="h-full w-full object-cover"
-              />
-            ) : null}
-          </div>
-        </div>
+        <ImageGallery images={product.preview_images} alt={product.name} />
 
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -64,15 +58,10 @@ export default async function ProductDetailPage({
           <p className="mt-4 text-2xl font-bold text-ink">
             {isFree ? "0 đ" : formatVnd(product.price)}
           </p>
-          {product.description && (
-            <p className="mt-4 whitespace-pre-line leading-relaxed text-slate-600">
-              {product.description}
-            </p>
-          )}
 
           <Link
             href={checkoutHref}
-            className="mt-8 inline-flex items-center rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700"
+            className="mt-6 inline-flex items-center rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700"
           >
             {isFree ? "Tải miễn phí" : "Mua ngay — thanh toán qua VietQR"}
           </Link>
@@ -110,6 +99,55 @@ export default async function ProductDetailPage({
           ))}
         </div>
       </div>
+
+      {/* Video hướng dẫn */}
+      {product.video_url && (
+        <section className="mt-14">
+          <h2 className="text-xl font-bold text-ink">Video hướng dẫn</h2>
+          <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-black">
+            {embedUrl ? (
+              <div className="aspect-video w-full">
+                <iframe
+                  src={embedUrl}
+                  title={`Video hướng dẫn — ${product.name}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="h-full w-full"
+                />
+              </div>
+            ) : isDirectVideo ? (
+              <video src={product.video_url} controls className="aspect-video w-full" />
+            ) : (
+              <a
+                href={product.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-6 text-center text-sm font-medium text-white underline"
+              >
+                Xem video hướng dẫn →
+              </a>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Mô tả chi tiết */}
+      {product.description && (
+        <section className="mt-14 max-w-3xl">
+          <h2 className="text-xl font-bold text-ink">Mô tả chi tiết</h2>
+          <div className="prose-sm mt-4 whitespace-pre-line leading-relaxed text-slate-600">
+            {product.description}
+          </div>
+        </section>
+      )}
     </div>
   );
+}
+
+function isDirectVideoFileSafe(url: string): boolean {
+  try {
+    return isDirectVideoFile(url);
+  } catch {
+    return false;
+  }
 }

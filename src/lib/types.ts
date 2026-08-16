@@ -26,6 +26,8 @@ export interface Product {
   monetization_strategy?: string | null;
   /** Sản phẩm liên quan — dùng cho cặp Basic (miễn phí) ↔ Pro (trả phí). */
   related_product_id?: string | null;
+  /** Link video hướng dẫn (YouTube/Vimeo/mp4 trực tiếp). */
+  video_url?: string | null;
 }
 
 export interface Bundle {
