@@ -1,5 +1,5 @@
 import { createBrowserSupabaseClient } from "@/lib/supabase";
-import type { Product } from "@/lib/types";
+import type { Product, ProductCategory } from "@/lib/types";
 
 export async function getActiveProducts(): Promise<Product[]> {
   const supabase = createBrowserSupabaseClient();
@@ -30,6 +30,28 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     return null;
   }
   return data as Product | null;
+}
+
+/** Sản phẩm cùng nhóm ngành, không tính sản phẩm đang xem — dùng cho khối "Sản phẩm liên quan". */
+export async function getRelatedProducts(
+  category: ProductCategory,
+  excludeId: string,
+  limit = 4
+): Promise<Product[]> {
+  const supabase = createBrowserSupabaseClient();
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("category", category)
+    .eq("is_active", true)
+    .neq("id", excludeId)
+    .limit(limit);
+
+  if (error) {
+    console.error("getRelatedProducts error:", error.message);
+    return [];
+  }
+  return data as Product[];
 }
 
 export async function getProductById(id: string): Promise<Product | null> {

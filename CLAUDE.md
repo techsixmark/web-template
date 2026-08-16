@@ -56,6 +56,10 @@ Giai đoạn đầu: thêm/sửa sản phẩm trực tiếp qua Supabase Studio 
 `products` + upload file vào bucket `product-files`). Chưa có trang admin
 riêng (xem [docs/DECISIONS.md](docs/DECISIONS.md)).
 
+Hướng dẫn từng bước cho chủ shop (đăng sản phẩm, sửa giá, thêm mã giảm giá,
+tạo combo) — không cần biết code: xem
+[docs/HUONG-DAN-VAN-HANH.md](docs/HUONG-DAN-VAN-HANH.md).
+
 ## Biến môi trường (`.env.local`, xem `.env.example`)
 ```
 NEXT_PUBLIC_SUPABASE_URL=

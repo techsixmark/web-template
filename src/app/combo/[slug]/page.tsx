@@ -1,10 +1,41 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getBundleBySlug, getProductsByIds } from "@/lib/bundles";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
 import { CATEGORY_ICONS, formatVnd } from "@/lib/types";
+import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const bundle = await getBundleBySlug(slug);
+  if (!bundle) return {};
+
+  const description =
+    bundle.description?.slice(0, 155).trim() ??
+    `${bundle.name} — combo template tiết kiệm hơn mua lẻ.`;
+  const image = bundle.preview_images[0];
+  const url = `${SITE_URL}/combo/${bundle.slug}`;
+
+  return {
+    title: bundle.name,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: bundle.name,
+      description,
+      url,
+      type: "website",
+      images: image ? [{ url: image }] : undefined,
+    },
+  };
+}
 
 export default async function BundleDetailPage({
   params,

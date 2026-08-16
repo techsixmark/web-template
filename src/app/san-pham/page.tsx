@@ -12,6 +12,12 @@ import {
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: "Tất cả sản phẩm",
+  description:
+    "Toàn bộ template Google Sheets/Excel theo 10 nhóm ngành: tài chính cá nhân, kế toán, quản lý dự án, nhân sự, sales, bất động sản và hơn thế nữa.",
+};
+
 export default async function ProductListPage({
   searchParams,
 }: {

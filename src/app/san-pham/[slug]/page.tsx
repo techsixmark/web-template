@@ -1,14 +1,54 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { CATEGORY_ICONS, CATEGORY_LABELS, formatVnd } from "@/lib/types";
 import { PriceTag } from "@/components/PriceTag";
-import { getProductBySlug, getProductById } from "@/lib/products";
+import { getProductBySlug, getProductById, getRelatedProducts } from "@/lib/products";
 import { getBundlesForProduct } from "@/lib/bundles";
 import { ImageGallery } from "@/components/ImageGallery";
 import { AddToCartButton } from "@/components/AddToCartButton";
 import { getEmbedUrl, isDirectVideoFile } from "@/lib/video";
+import { ProductCard } from "@/components/ProductCard";
+import { TrustBadges } from "@/components/TrustBadges";
+import { ProductFaq } from "@/components/ProductFaq";
+import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+  if (!product) return {};
+
+  const description =
+    product.description?.slice(0, 155).trim() ??
+    `${product.name} — template Google Sheets/Excel, giao file tự động qua email sau khi thanh toán.`;
+  const image = product.preview_images[0];
+  const url = `${SITE_URL}/san-pham/${product.slug}`;
+
+  return {
+    title: product.name,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: product.name,
+      description,
+      url,
+      type: "website",
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
 
 export default async function ProductDetailPage({
   params,
@@ -27,6 +67,7 @@ export default async function ProductDetailPage({
     ? await getProductById(product.related_product_id)
     : null;
   const bundlesWithThisProduct = await getBundlesForProduct(product.id);
+  const relatedProducts = await getRelatedProducts(product.category, product.id);
   const checkoutHref = ref
     ? `/checkout/${product.slug}?ref=${encodeURIComponent(ref)}`
     : `/checkout/${product.slug}`;
@@ -35,8 +76,29 @@ export default async function ProductDetailPage({
   const isDirectVideo =
     product.video_url && !embedUrl ? isDirectVideoFileSafe(product.video_url) : false;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description ?? undefined,
+    image: product.preview_images,
+    category: CATEGORY_LABELS[product.category],
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "VND",
+      price: product.price,
+      availability: "https://schema.org/InStock",
+      url: `${SITE_URL}/san-pham/${product.slug}`,
+    },
+  };
+
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
+      <script
+        type="application/ld+json"
+         
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link href="/san-pham" className="text-sm font-medium text-slate-500 hover:text-brand-600">
         ← Tất cả sản phẩm
       </Link>
@@ -76,6 +138,10 @@ export default async function ProductDetailPage({
               ? "File sẽ được gửi ngay qua email sau khi bạn đăng ký — không cần thanh toán."
               : "File sẽ được gửi tự động qua email ngay sau khi hệ thống xác nhận đã nhận được thanh toán."}
           </p>
+
+          <div className="mt-5">
+            <TrustBadges />
+          </div>
 
           {relatedProduct && (
             <div className="mt-6 rounded-xl border border-brand-100 bg-brand-50 p-4">
@@ -142,6 +208,26 @@ export default async function ProductDetailPage({
           <h2 className="text-xl font-bold text-ink">Mô tả chi tiết</h2>
           <div className="prose-sm mt-4 whitespace-pre-line leading-relaxed text-slate-600">
             {product.description}
+          </div>
+        </section>
+      )}
+
+      {/* Câu hỏi thường gặp */}
+      <section className="mt-14 max-w-3xl">
+        <h2 className="text-xl font-bold text-ink">Câu hỏi thường gặp</h2>
+        <div className="mt-4">
+          <ProductFaq />
+        </div>
+      </section>
+
+      {/* Sản phẩm liên quan */}
+      {relatedProducts.length > 0 && (
+        <section className="mt-14">
+          <h2 className="text-xl font-bold text-ink">Sản phẩm liên quan</h2>
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {relatedProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
           </div>
         </section>
       )}

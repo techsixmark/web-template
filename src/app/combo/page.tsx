@@ -4,6 +4,11 @@ import { formatVnd } from "@/lib/types";
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: "Combo tiết kiệm",
+  description: "Mua trọn bộ nhiều template liên quan trong 1 đơn hàng, giá tốt hơn mua lẻ.",
+};
+
 export default async function BundleListPage() {
   const bundles = await getActiveBundles();
 

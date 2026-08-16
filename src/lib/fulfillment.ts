@@ -1,5 +1,6 @@
 import { createServiceSupabaseClient } from "@/lib/supabase";
 import { sendDownloadEmail } from "@/lib/email";
+import { SITE_URL } from "@/lib/site";
 
 const DOWNLOAD_LINK_TTL_HOURS = 48;
 
@@ -70,7 +71,7 @@ export async function fulfillOrder(
   if (items.length === 0) return;
 
   const expiresAt = new Date(Date.now() + DOWNLOAD_LINK_TTL_HOURS * 60 * 60 * 1000);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = SITE_URL;
 
   const emailItems: { productName: string; downloadUrl: string }[] = [];
   for (const item of items) {
