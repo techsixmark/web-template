@@ -85,6 +85,21 @@ export const CATEGORY_ICONS: Record<ProductCategory, string> = {
   "fitness-health": "🏋️",
 };
 
+/** Màu nền pastel riêng cho từng nhóm ngành — dùng làm nền ảnh sản phẩm khi
+ * chưa có ảnh chụp thật, tạo cảm giác đa dạng như card mockup. */
+export const CATEGORY_BG: Record<ProductCategory, string> = {
+  "personal-finance": "bg-emerald-50",
+  "accounting-b2b": "bg-amber-50",
+  "project-management": "bg-indigo-50",
+  "hr-operations": "bg-sky-50",
+  "marketing-sales": "bg-rose-50",
+  "real-estate": "bg-orange-50",
+  ecommerce: "bg-violet-50",
+  "event-wedding": "bg-pink-50",
+  "education-coaching": "bg-teal-50",
+  "fitness-health": "bg-lime-50",
+};
+
 export const CATEGORY_ORDER: ProductCategory[] = [
   "personal-finance",
   "accounting-b2b",

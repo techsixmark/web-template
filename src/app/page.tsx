@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryBanner } from "@/components/CategoryBanner";
+import { FadeIn } from "@/components/FadeIn";
 import { getActiveProducts } from "@/lib/products";
 import { CATEGORY_ICONS, CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/types";
 
@@ -51,64 +52,76 @@ export default async function HomePage() {
       {/* Quy trình */}
       <section id="quy-trinh" className="border-b border-slate-200 bg-white">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 py-16 sm:grid-cols-3">
-          <Step
-            index="01"
-            title="Thanh toán VietQR"
-            desc="Quét mã, chuyển khoản trực tiếp từ app ngân hàng, không cần thẻ."
-          />
-          <Step
-            index="02"
-            title="Xác nhận tự động"
-            desc="Hệ thống tự đối soát giao dịch, không cần chờ admin duyệt."
-          />
-          <Step
-            index="03"
-            title="Nhận file qua email"
-            desc="Link tải được gửi tự động ngay sau khi thanh toán thành công."
-          />
+          <FadeIn delay={0}>
+            <Step
+              index="01"
+              title="Thanh toán VietQR"
+              desc="Quét mã, chuyển khoản trực tiếp từ app ngân hàng, không cần thẻ."
+            />
+          </FadeIn>
+          <FadeIn delay={100}>
+            <Step
+              index="02"
+              title="Xác nhận tự động"
+              desc="Hệ thống tự đối soát giao dịch, không cần chờ admin duyệt."
+            />
+          </FadeIn>
+          <FadeIn delay={200}>
+            <Step
+              index="03"
+              title="Nhận file qua email"
+              desc="Link tải được gửi tự động ngay sau khi thanh toán thành công."
+            />
+          </FadeIn>
         </div>
       </section>
 
       {/* Banner: freemium */}
-      <CategoryBanner
-        eyebrow="Miễn phí"
-        title="Dùng thử miễn phí trước khi mua"
-        subtitle="Không cần thanh toán, không cần thẻ"
-        description="Đăng ký email để nhận ngay bản Basic của Ultimate Personal Finance Dashboard — file được gửi tự động vào email trong vài giây, dùng thử trước khi nâng cấp bản Pro đầy đủ tính năng."
-        image="https://placehold.co/700x525?text=Free+Basic+Template"
-        primaryHref="/san-pham/ultimate-personal-finance-dashboard-basic"
-        primaryLabel="Nhận Template miễn phí"
-        secondaryHref="/san-pham"
-        secondaryLabel="Xem tất cả sản phẩm"
-      />
+      <FadeIn>
+        <CategoryBanner
+          eyebrow="Miễn phí"
+          title="Dùng thử miễn phí trước khi mua"
+          subtitle="Không cần thanh toán, không cần thẻ"
+          description="Đăng ký email để nhận ngay bản Basic của Ultimate Personal Finance Dashboard — file được gửi tự động vào email trong vài giây, dùng thử trước khi nâng cấp bản Pro đầy đủ tính năng."
+          image="https://placehold.co/700x525?text=Free+Basic+Template"
+          primaryHref="/san-pham/ultimate-personal-finance-dashboard-basic"
+          primaryLabel="Nhận Template miễn phí"
+          secondaryHref="/san-pham"
+          secondaryLabel="Xem tất cả sản phẩm"
+        />
+      </FadeIn>
 
       {/* Banner: doanh nghiệp */}
-      <CategoryBanner
-        eyebrow="Dành cho doanh nghiệp"
-        title="Vận hành doanh nghiệp gọn gàng hơn"
-        subtitle="Quản lý dự án · Kế toán · Nhân sự · Sales"
-        description="Bộ template quản trị chuyên sâu cho Startup và SME: theo dõi tiến độ dự án kiểu Agile/Scrum, quản lý công nợ tự động, chấm công tính lương, phễu bán hàng — không cần trả phí phần mềm đắt đỏ."
-        image="https://placehold.co/700x525?text=Business+Templates"
-        primaryHref="/checkout/agile-scrum-project-manager"
-        primaryLabel="Mua ngay"
-        secondaryHref="/san-pham?category=project-management"
-        secondaryLabel="Xem thêm"
-        reverse
-        tone="dark"
-      />
+      <FadeIn>
+        <CategoryBanner
+          eyebrow="Dành cho doanh nghiệp"
+          title="Vận hành doanh nghiệp gọn gàng hơn"
+          subtitle="Quản lý dự án · Kế toán · Nhân sự · Sales"
+          description="Bộ template quản trị chuyên sâu cho Startup và SME: theo dõi tiến độ dự án kiểu Agile/Scrum, quản lý công nợ tự động, chấm công tính lương, phễu bán hàng — không cần trả phí phần mềm đắt đỏ."
+          image="https://placehold.co/700x525?text=Business+Templates"
+          primaryHref="/checkout/agile-scrum-project-manager"
+          primaryLabel="Mua ngay"
+          secondaryHref="/san-pham?category=project-management"
+          secondaryLabel="Xem thêm"
+          reverse
+          tone="dark"
+        />
+      </FadeIn>
 
       {/* Banner: combo */}
-      <CategoryBanner
-        eyebrow="Combo tiết kiệm"
-        title="Mua trọn bộ, tiết kiệm hơn"
-        subtitle="Nhiều template liên quan trong 1 đơn hàng"
-        description="Kết hợp các template cùng chủ đề thành combo với giá tốt hơn mua lẻ — thanh toán 1 lần, nhận đủ link tải cho tất cả sản phẩm trong combo qua email."
-        image="https://placehold.co/700x525?text=Combo+Tiet+Kiem"
-        primaryHref="/combo"
-        primaryLabel="Xem combo"
-        secondaryHref="/san-pham"
-        secondaryLabel="Xem tất cả sản phẩm"
-      />
+      <FadeIn>
+        <CategoryBanner
+          eyebrow="Combo tiết kiệm"
+          title="Mua trọn bộ, tiết kiệm hơn"
+          subtitle="Nhiều template liên quan trong 1 đơn hàng"
+          description="Kết hợp các template cùng chủ đề thành combo với giá tốt hơn mua lẻ — thanh toán 1 lần, nhận đủ link tải cho tất cả sản phẩm trong combo qua email."
+          image="https://placehold.co/700x525?text=Combo+Tiet+Kiem"
+          primaryHref="/combo"
+          primaryLabel="Xem combo"
+          secondaryHref="/san-pham"
+          secondaryLabel="Xem tất cả sản phẩm"
+        />
+      </FadeIn>
 
       {/* Danh mục ngành */}
       <section className="mx-auto w-full max-w-6xl px-6 py-16">
@@ -121,17 +134,18 @@ export default async function HomePage() {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {CATEGORY_ORDER.map((c) => (
-            <Link
-              key={c}
-              href="/san-pham"
-              className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-500/10"
-            >
-              <span className="text-3xl">{CATEGORY_ICONS[c]}</span>
-              <span className="text-sm font-medium text-slate-700 group-hover:text-brand-700">
-                {CATEGORY_LABELS[c]}
-              </span>
-            </Link>
+          {CATEGORY_ORDER.map((c, i) => (
+            <FadeIn key={c} delay={(i % 5) * 60}>
+              <Link
+                href="/san-pham"
+                className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-500/10"
+              >
+                <span className="text-3xl">{CATEGORY_ICONS[c]}</span>
+                <span className="text-sm font-medium text-slate-700 group-hover:text-brand-700">
+                  {CATEGORY_LABELS[c]}
+                </span>
+              </Link>
+            </FadeIn>
           ))}
         </div>
       </section>
@@ -149,8 +163,10 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((p) => (
-                <ProductCard key={p.id} product={p} />
+              {featured.map((p, i) => (
+                <FadeIn key={p.id} delay={(i % 3) * 80}>
+                  <ProductCard product={p} />
+                </FadeIn>
               ))}
             </div>
           </div>

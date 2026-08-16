@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORY_ICONS, CATEGORY_LABELS, formatVnd, type Product } from "@/lib/types";
+import { CATEGORY_BG, CATEGORY_ICONS, CATEGORY_LABELS, formatVnd, type Product } from "@/lib/types";
 
 export function ProductCard({ product }: { product: Product }) {
   const cover = product.preview_images[0];
@@ -8,7 +8,9 @@ export function ProductCard({ product }: { product: Product }) {
       href={`/san-pham/${product.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+      <div
+        className={`relative aspect-[4/3] w-full overflow-hidden ${CATEGORY_BG[product.category]}`}
+      >
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
