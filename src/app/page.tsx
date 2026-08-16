@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
+import { CategoryBanner } from "@/components/CategoryBanner";
 import { getActiveProducts } from "@/lib/products";
 import { CATEGORY_ICONS, CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/types";
 
@@ -67,6 +68,47 @@ export default async function HomePage() {
           />
         </div>
       </section>
+
+      {/* Banner: freemium */}
+      <CategoryBanner
+        eyebrow="Miễn phí"
+        title="Dùng thử miễn phí trước khi mua"
+        subtitle="Không cần thanh toán, không cần thẻ"
+        description="Đăng ký email để nhận ngay bản Basic của Ultimate Personal Finance Dashboard — file được gửi tự động vào email trong vài giây, dùng thử trước khi nâng cấp bản Pro đầy đủ tính năng."
+        image="https://placehold.co/700x525?text=Free+Basic+Template"
+        primaryHref="/san-pham/ultimate-personal-finance-dashboard-basic"
+        primaryLabel="Nhận Template miễn phí"
+        secondaryHref="/san-pham"
+        secondaryLabel="Xem tất cả sản phẩm"
+      />
+
+      {/* Banner: doanh nghiệp */}
+      <CategoryBanner
+        eyebrow="Dành cho doanh nghiệp"
+        title="Vận hành doanh nghiệp gọn gàng hơn"
+        subtitle="Quản lý dự án · Kế toán · Nhân sự · Sales"
+        description="Bộ template quản trị chuyên sâu cho Startup và SME: theo dõi tiến độ dự án kiểu Agile/Scrum, quản lý công nợ tự động, chấm công tính lương, phễu bán hàng — không cần trả phí phần mềm đắt đỏ."
+        image="https://placehold.co/700x525?text=Business+Templates"
+        primaryHref="/checkout/agile-scrum-project-manager"
+        primaryLabel="Mua ngay"
+        secondaryHref="/san-pham?category=project-management"
+        secondaryLabel="Xem thêm"
+        reverse
+        tone="dark"
+      />
+
+      {/* Banner: combo */}
+      <CategoryBanner
+        eyebrow="Combo tiết kiệm"
+        title="Mua trọn bộ, tiết kiệm hơn"
+        subtitle="Nhiều template liên quan trong 1 đơn hàng"
+        description="Kết hợp các template cùng chủ đề thành combo với giá tốt hơn mua lẻ — thanh toán 1 lần, nhận đủ link tải cho tất cả sản phẩm trong combo qua email."
+        image="https://placehold.co/700x525?text=Combo+Tiet+Kiem"
+        primaryHref="/combo"
+        primaryLabel="Xem combo"
+        secondaryHref="/san-pham"
+        secondaryLabel="Xem tất cả sản phẩm"
+      />
 
       {/* Danh mục ngành */}
       <section className="mx-auto w-full max-w-6xl px-6 py-16">
