@@ -42,6 +42,15 @@ Cách đơn giản nhất: upload ảnh lên Supabase Storage rồi copy link.
 2. Đặt tên file trùng khớp với giá trị bạn điền ở cột `file_path`
 3. **Không cần** để bucket này public — hệ thống tự tạo link tải có hạn khi khách mua hàng
 
+### 1d. Dịch sản phẩm sang tiếng Anh/tiếng Trung (không bắt buộc)
+Web hỗ trợ 3 ngôn ngữ (VI/EN/中文) qua nút chuyển ở góc phải Header. Nếu
+không dịch, sản phẩm mới sẽ hiển thị tên/mô tả tiếng Việt cho mọi ngôn ngữ.
+
+Muốn dịch: Table Editor → bảng **`product_translations`** → **Insert row**:
+- `product_id`: copy từ cột `id` của sản phẩm trong bảng `products`
+- `locale`: `en` hoặc `zh`
+- `name`, `description`: nội dung đã dịch
+
 ---
 
 ## 2. Sửa giá / đặt giá khuyến mãi

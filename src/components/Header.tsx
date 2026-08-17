@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { CartLink } from "@/components/CartLink";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { getLocale } from "@/lib/i18n/locale";
+import { getDictionary } from "@/lib/i18n/dictionary";
 
-export function Header() {
+export async function Header() {
+  const locale = await getLocale();
+  const t = getDictionary(locale).header;
+
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/90 backdrop-blur supports-[backdrop-filter]:bg-ink/70">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
@@ -13,25 +19,26 @@ export function Header() {
             Template<span className="text-brand-500">Shop</span>
           </span>
         </Link>
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-4">
           <Link
             href="/san-pham"
             className="hidden text-sm font-medium text-slate-300 transition hover:text-white sm:block"
           >
-            Tất cả sản phẩm
+            {t.allProducts}
           </Link>
           <Link
             href="/combo"
             className="hidden text-sm font-medium text-slate-300 transition hover:text-white sm:block"
           >
-            Combo tiết kiệm
+            {t.combo}
           </Link>
+          <LanguageSwitcher current={locale} />
           <CartLink />
           <Link
             href="/san-pham"
             className="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-brand-50"
           >
-            Mua template
+            {t.buyTemplate}
           </Link>
         </nav>
       </div>

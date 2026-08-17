@@ -3,8 +3,16 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import type { Product } from "@/lib/types";
+import { getDictionary, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/dictionary";
 
-export function AddToCartButton({ product }: { product: Product }) {
+export function AddToCartButton({
+  product,
+  locale = DEFAULT_LOCALE,
+}: {
+  product: Product;
+  locale?: Locale;
+}) {
+  const t = getDictionary(locale).product;
   const { addItem, items } = useCart();
   const [justAdded, setJustAdded] = useState(false);
   const inCart = items.some((i) => i.slug === product.slug);
@@ -28,7 +36,7 @@ export function AddToCartButton({ product }: { product: Product }) {
       disabled={inCart}
       className="inline-flex items-center rounded-full border border-ink px-6 py-3 text-base font-semibold text-ink transition hover:bg-slate-50 disabled:cursor-default disabled:opacity-60"
     >
-      {inCart ? "Đã có trong giỏ ✓" : justAdded ? "Đã thêm ✓" : "Thêm vào giỏ hàng"}
+      {inCart ? t.alreadyInCart : justAdded ? t.addedToCart : t.addToCart}
     </button>
   );
 }

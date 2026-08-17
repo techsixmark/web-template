@@ -4,10 +4,12 @@ export function PriceTag({
   price,
   compareAtPrice,
   size = "base",
+  freeLabel = "Miễn phí",
 }: {
   price: number;
   compareAtPrice?: number | null;
   size?: "base" | "lg";
+  freeLabel?: string;
 }) {
   const isFree = price === 0;
   const onSale = !!compareAtPrice && compareAtPrice > price;
@@ -18,7 +20,7 @@ export function PriceTag({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className={`${priceClass} text-ink`}>
-        {isFree ? <span className="text-emerald-600">Miễn phí</span> : formatVnd(price)}
+        {isFree ? <span className="text-emerald-600">{freeLabel}</span> : formatVnd(price)}
       </span>
       {onSale && !isFree && (
         <>

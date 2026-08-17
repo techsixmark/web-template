@@ -3,12 +3,16 @@ import { ProductCard } from "@/components/ProductCard";
 import { CategoryBanner } from "@/components/CategoryBanner";
 import { FadeIn } from "@/components/FadeIn";
 import { getActiveProducts } from "@/lib/products";
-import { CATEGORY_ICONS, CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/types";
+import { CATEGORY_ICONS, CATEGORY_ORDER, getCategoryLabel } from "@/lib/types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { getLocale } from "@/lib/i18n/locale";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const products = await getActiveProducts();
+  const locale = await getLocale();
+  const t = getDictionary(locale).home;
+  const products = await getActiveProducts(locale);
   const featured = products.slice(0, 6);
 
   return (
@@ -19,31 +23,27 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-5xl px-6 py-24 text-center sm:py-32">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-300">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            10 nhóm ngành · Google Sheets &amp; Excel chuyên nghiệp
+            {t.heroBadge}
           </span>
           <h1 className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-6xl">
-            Template quản trị giúp bạn{" "}
+            {t.heroTitle}{" "}
             <span className="bg-gradient-to-r from-brand-500 via-violet-400 to-accent-400 bg-clip-text text-transparent">
-              vận hành gọn gàng hơn
+              {t.heroTitleHighlight}
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-300">
-            Từ tài chính cá nhân đến vận hành doanh nghiệp — chuyển khoản qua
-            VietQR, hệ thống tự động xác nhận và gửi file về email chỉ trong
-            vài giây.
-          </p>
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-300">{t.heroDesc}</p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/san-pham"
               className="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-base font-semibold text-ink transition hover:bg-brand-50"
             >
-              Khám phá 10 nhóm sản phẩm
+              {t.heroCta1}
             </Link>
             <Link
               href="#quy-trinh"
               className="inline-flex items-center justify-center rounded-full border border-white/20 px-7 py-3 text-base font-semibold text-white transition hover:bg-white/10"
             >
-              Xem cách hoạt động
+              {t.heroCta2}
             </Link>
           </div>
         </div>
@@ -53,25 +53,13 @@ export default async function HomePage() {
       <section id="quy-trinh" className="border-b border-slate-200 bg-white">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 py-16 sm:grid-cols-3">
           <FadeIn delay={0}>
-            <Step
-              index="01"
-              title="Thanh toán VietQR"
-              desc="Quét mã, chuyển khoản trực tiếp từ app ngân hàng, không cần thẻ."
-            />
+            <Step index="01" title={t.step1Title} desc={t.step1Desc} />
           </FadeIn>
           <FadeIn delay={100}>
-            <Step
-              index="02"
-              title="Xác nhận tự động"
-              desc="Hệ thống tự đối soát giao dịch, không cần chờ admin duyệt."
-            />
+            <Step index="02" title={t.step2Title} desc={t.step2Desc} />
           </FadeIn>
           <FadeIn delay={200}>
-            <Step
-              index="03"
-              title="Nhận file qua email"
-              desc="Link tải được gửi tự động ngay sau khi thanh toán thành công."
-            />
+            <Step index="03" title={t.step3Title} desc={t.step3Desc} />
           </FadeIn>
         </div>
       </section>
@@ -79,30 +67,30 @@ export default async function HomePage() {
       {/* Banner: freemium */}
       <FadeIn>
         <CategoryBanner
-          eyebrow="Miễn phí"
-          title="Dùng thử miễn phí trước khi mua"
-          subtitle="Không cần thanh toán, không cần thẻ"
-          description="Đăng ký email để nhận ngay bản Basic của Ultimate Personal Finance Dashboard — file được gửi tự động vào email trong vài giây, dùng thử trước khi nâng cấp bản Pro đầy đủ tính năng."
+          eyebrow={t.bannerFreeEyebrow}
+          title={t.bannerFreeTitle}
+          subtitle={t.bannerFreeSubtitle}
+          description={t.bannerFreeDesc}
           image="https://placehold.co/700x525?text=Free+Basic+Template"
           primaryHref="/san-pham/ultimate-personal-finance-dashboard-basic"
-          primaryLabel="Nhận Template miễn phí"
+          primaryLabel={t.bannerFreeCta1}
           secondaryHref="/san-pham"
-          secondaryLabel="Xem tất cả sản phẩm"
+          secondaryLabel={t.bannerFreeCta2}
         />
       </FadeIn>
 
       {/* Banner: doanh nghiệp */}
       <FadeIn>
         <CategoryBanner
-          eyebrow="Dành cho doanh nghiệp"
-          title="Vận hành doanh nghiệp gọn gàng hơn"
-          subtitle="Quản lý dự án · Kế toán · Nhân sự · Sales"
-          description="Bộ template quản trị chuyên sâu cho Startup và SME: theo dõi tiến độ dự án kiểu Agile/Scrum, quản lý công nợ tự động, chấm công tính lương, phễu bán hàng — không cần trả phí phần mềm đắt đỏ."
+          eyebrow={t.bannerBizEyebrow}
+          title={t.bannerBizTitle}
+          subtitle={t.bannerBizSubtitle}
+          description={t.bannerBizDesc}
           image="https://placehold.co/700x525?text=Business+Templates"
           primaryHref="/checkout/agile-scrum-project-manager"
-          primaryLabel="Mua ngay"
+          primaryLabel={t.bannerBizCta1}
           secondaryHref="/san-pham?category=project-management"
-          secondaryLabel="Xem thêm"
+          secondaryLabel={t.bannerBizCta2}
           reverse
           tone="dark"
         />
@@ -111,27 +99,23 @@ export default async function HomePage() {
       {/* Banner: combo */}
       <FadeIn>
         <CategoryBanner
-          eyebrow="Combo tiết kiệm"
-          title="Mua trọn bộ, tiết kiệm hơn"
-          subtitle="Nhiều template liên quan trong 1 đơn hàng"
-          description="Kết hợp các template cùng chủ đề thành combo với giá tốt hơn mua lẻ — thanh toán 1 lần, nhận đủ link tải cho tất cả sản phẩm trong combo qua email."
+          eyebrow={t.bannerComboEyebrow}
+          title={t.bannerComboTitle}
+          subtitle={t.bannerComboSubtitle}
+          description={t.bannerComboDesc}
           image="https://placehold.co/700x525?text=Combo+Tiet+Kiem"
           primaryHref="/combo"
-          primaryLabel="Xem combo"
+          primaryLabel={t.bannerComboCta1}
           secondaryHref="/san-pham"
-          secondaryLabel="Xem tất cả sản phẩm"
+          secondaryLabel={t.bannerComboCta2}
         />
       </FadeIn>
 
       {/* Danh mục ngành */}
       <section className="mx-auto w-full max-w-6xl px-6 py-16">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-ink sm:text-3xl">
-            Chọn theo lĩnh vực của bạn
-          </h2>
-          <p className="mt-2 text-slate-500">
-            10 nhóm ngành, mỗi nhóm là template được thiết kế riêng cho nhu cầu cụ thể.
-          </p>
+          <h2 className="text-2xl font-bold text-ink sm:text-3xl">{t.categoryHeading}</h2>
+          <p className="mt-2 text-slate-500">{t.categorySub}</p>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {CATEGORY_ORDER.map((c, i) => (
@@ -142,7 +126,7 @@ export default async function HomePage() {
               >
                 <span className="text-3xl">{CATEGORY_ICONS[c]}</span>
                 <span className="text-sm font-medium text-slate-700 group-hover:text-brand-700">
-                  {CATEGORY_LABELS[c]}
+                  {getCategoryLabel(c, locale)}
                 </span>
               </Link>
             </FadeIn>
@@ -155,17 +139,15 @@ export default async function HomePage() {
         <section className="border-t border-slate-200 bg-slate-50">
           <div className="mx-auto w-full max-w-6xl px-6 py-16">
             <div className="mb-8 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-ink sm:text-3xl">
-                Sản phẩm nổi bật
-              </h2>
+              <h2 className="text-2xl font-bold text-ink sm:text-3xl">{t.featuredHeading}</h2>
               <Link href="/san-pham" className="text-sm font-semibold text-brand-600">
-                Xem tất cả →
+                {t.viewAll}
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {featured.map((p, i) => (
                 <FadeIn key={p.id} delay={(i % 3) * 80}>
-                  <ProductCard product={p} />
+                  <ProductCard product={p} locale={locale} />
                 </FadeIn>
               ))}
             </div>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { CATEGORY_ICONS, CATEGORY_LABELS, formatVnd } from "@/lib/types";
+import { formatVnd, getCategoryLabel } from "@/lib/types";
 import { PriceTag } from "@/components/PriceTag";
 import { getProductBySlug, getProductById, getRelatedProducts } from "@/lib/products";
 import { getBundlesForProduct } from "@/lib/bundles";
@@ -15,6 +15,8 @@ import { StarRating } from "@/components/StarRating";
 import { ReviewForm } from "@/components/ReviewForm";
 import { getApprovedReviews } from "@/lib/reviews";
 import { SITE_URL } from "@/lib/site";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { getLocale } from "@/lib/i18n/locale";
 
 export const revalidate = 60;
 
@@ -62,15 +64,17 @@ export default async function ProductDetailPage({
 }) {
   const { slug } = await params;
   const { ref } = await searchParams;
-  const product = await getProductBySlug(slug);
+  const locale = await getLocale();
+  const t = getDictionary(locale).product;
+  const product = await getProductBySlug(slug, locale);
   if (!product) notFound();
 
   const isFree = product.price === 0;
   const relatedProduct = product.related_product_id
-    ? await getProductById(product.related_product_id)
+    ? await getProductById(product.related_product_id, locale)
     : null;
-  const bundlesWithThisProduct = await getBundlesForProduct(product.id);
-  const relatedProducts = await getRelatedProducts(product.category, product.id);
+  const bundlesWithThisProduct = await getBundlesForProduct(product.id, locale);
+  const relatedProducts = await getRelatedProducts(product.category, product.id, 4, locale);
   const { reviews, average, count: reviewCount } = await getApprovedReviews(product.id);
   const checkoutHref = ref
     ? `/checkout/${product.slug}?ref=${encodeURIComponent(ref)}`
@@ -86,7 +90,7 @@ export default async function ProductDetailPage({
     name: product.name,
     description: product.description ?? undefined,
     image: product.preview_images,
-    category: CATEGORY_LABELS[product.category],
+    category: getCategoryLabel(product.category, locale),
     offers: {
       "@type": "Offer",
       priceCurrency: "VND",
@@ -109,11 +113,10 @@ export default async function ProductDetailPage({
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
       <script
         type="application/ld+json"
-         
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Link href="/san-pham" className="text-sm font-medium text-slate-500 hover:text-brand-600">
-        ← Tất cả sản phẩm
+        {t.backToAll}
       </Link>
 
       <div className="mt-4 grid grid-cols-1 gap-10 lg:grid-cols-2">
@@ -122,12 +125,11 @@ export default async function ProductDetailPage({
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
-              <span>{CATEGORY_ICONS[product.category]}</span>
-              {CATEGORY_LABELS[product.category]}
+              {getCategoryLabel(product.category, locale)}
             </span>
             {isFree && (
               <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                Miễn phí
+                {t.free}
               </span>
             )}
           </div>
@@ -136,12 +138,17 @@ export default async function ProductDetailPage({
             <div className="mt-2 flex items-center gap-2">
               <StarRating value={average} size="sm" />
               <span className="text-sm text-slate-500">
-                {average.toFixed(1)} ({reviewCount} đánh giá)
+                {average.toFixed(1)} ({reviewCount} {t.reviewsCountSuffix})
               </span>
             </div>
           )}
           <div className="mt-4">
-            <PriceTag price={product.price} compareAtPrice={product.compare_at_price} size="lg" />
+            <PriceTag
+              price={product.price}
+              compareAtPrice={product.compare_at_price}
+              size="lg"
+              freeLabel={t.free}
+            />
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -149,25 +156,23 @@ export default async function ProductDetailPage({
               href={checkoutHref}
               className="inline-flex items-center rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700"
             >
-              {isFree ? "Tải miễn phí" : "Mua ngay — thanh toán qua VietQR"}
+              {isFree ? t.downloadFree : t.buyNow}
             </Link>
-            {!isFree && <AddToCartButton product={product} />}
+            {!isFree && <AddToCartButton product={product} locale={locale} />}
           </div>
 
           <p className="mt-3 text-sm text-slate-500">
-            {isFree
-              ? "File sẽ được gửi ngay qua email sau khi bạn đăng ký — không cần thanh toán."
-              : "File sẽ được gửi tự động qua email ngay sau khi hệ thống xác nhận đã nhận được thanh toán."}
+            {isFree ? t.freeDeliveryNote : t.paidDeliveryNote}
           </p>
 
           <div className="mt-5">
-            <TrustBadges />
+            <TrustBadges locale={locale} />
           </div>
 
           {relatedProduct && (
             <div className="mt-6 rounded-xl border border-brand-100 bg-brand-50 p-4">
               <p className="text-sm text-slate-600">
-                {isFree ? "Muốn nhiều tính năng hơn?" : "Đã có bản miễn phí:"}
+                {isFree ? t.upgradeNote : t.freeVersionNote}
               </p>
               <Link
                 href={`/san-pham/${relatedProduct.slug}`}
@@ -180,7 +185,7 @@ export default async function ProductDetailPage({
 
           {bundlesWithThisProduct.map((b) => (
             <div key={b.id} className="mt-6 rounded-xl border border-accent-500/20 bg-accent-500/5 p-4">
-              <p className="text-sm text-slate-600">Mua kèm combo, tiết kiệm hơn:</p>
+              <p className="text-sm text-slate-600">{t.bundleNote}</p>
               <Link
                 href={`/combo/${b.slug}`}
                 className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-accent-500 hover:underline"
@@ -195,13 +200,13 @@ export default async function ProductDetailPage({
       {/* Video hướng dẫn */}
       {product.video_url && (
         <section className="mt-14">
-          <h2 className="text-xl font-bold text-ink">Video hướng dẫn</h2>
+          <h2 className="text-xl font-bold text-ink">{t.videoHeading}</h2>
           <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-black">
             {embedUrl ? (
               <div className="aspect-video w-full">
                 <iframe
                   src={embedUrl}
-                  title={`Video hướng dẫn — ${product.name}`}
+                  title={`${t.videoHeading} — ${product.name}`}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="h-full w-full"
@@ -216,7 +221,7 @@ export default async function ProductDetailPage({
                 rel="noopener noreferrer"
                 className="block p-6 text-center text-sm font-medium text-white underline"
               >
-                Xem video hướng dẫn →
+                {t.watchVideo}
               </a>
             )}
           </div>
@@ -226,7 +231,7 @@ export default async function ProductDetailPage({
       {/* Mô tả chi tiết */}
       {product.description && (
         <section className="mt-14 max-w-3xl">
-          <h2 className="text-xl font-bold text-ink">Mô tả chi tiết</h2>
+          <h2 className="text-xl font-bold text-ink">{t.descHeading}</h2>
           <div className="prose-sm mt-4 whitespace-pre-line leading-relaxed text-slate-600">
             {product.description}
           </div>
@@ -235,16 +240,16 @@ export default async function ProductDetailPage({
 
       {/* Câu hỏi thường gặp */}
       <section className="mt-14 max-w-3xl">
-        <h2 className="text-xl font-bold text-ink">Câu hỏi thường gặp</h2>
+        <h2 className="text-xl font-bold text-ink">{t.faqHeading}</h2>
         <div className="mt-4">
-          <ProductFaq />
+          <ProductFaq locale={locale} />
         </div>
       </section>
 
       {/* Đánh giá từ khách hàng */}
       <section className="mt-14 max-w-3xl">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold text-ink">Đánh giá từ khách hàng</h2>
+          <h2 className="text-xl font-bold text-ink">{t.reviewsHeading}</h2>
           {reviewCount > 0 && (
             <span className="flex items-center gap-1.5 text-sm text-slate-500">
               <StarRating value={average} size="sm" />
@@ -266,21 +271,21 @@ export default async function ProductDetailPage({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 text-sm text-slate-500">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+          <p className="mt-4 text-sm text-slate-500">{t.noReviews}</p>
         )}
 
         <div className="mt-6">
-          <ReviewForm productSlug={product.slug} />
+          <ReviewForm productSlug={product.slug} locale={locale} />
         </div>
       </section>
 
       {/* Sản phẩm liên quan */}
       {relatedProducts.length > 0 && (
         <section className="mt-14">
-          <h2 className="text-xl font-bold text-ink">Sản phẩm liên quan</h2>
+          <h2 className="text-xl font-bold text-ink">{t.relatedHeading}</h2>
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {relatedProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} locale={locale} />
             ))}
           </div>
         </section>

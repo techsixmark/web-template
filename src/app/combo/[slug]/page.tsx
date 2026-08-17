@@ -5,6 +5,7 @@ import { getBundleBySlug, getProductsByIds } from "@/lib/bundles";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
 import { CATEGORY_ICONS, formatVnd } from "@/lib/types";
 import { SITE_URL } from "@/lib/site";
+import { getLocale } from "@/lib/i18n/locale";
 
 export const revalidate = 60;
 
@@ -43,11 +44,12 @@ export default async function BundleDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const bundle = await getBundleBySlug(slug);
+  const locale = await getLocale();
+  const bundle = await getBundleBySlug(slug, locale);
   if (!bundle) notFound();
 
   const supabase = createBrowserSupabaseClient();
-  const products = await getProductsByIds(supabase, bundle.product_ids);
+  const products = await getProductsByIds(supabase, bundle.product_ids, locale);
   const individualTotal = products.reduce((sum, p) => sum + p.price, 0);
   const savings = individualTotal - bundle.price;
   const cover = bundle.preview_images[0];

@@ -1,7 +1,33 @@
 import { createBrowserSupabaseClient } from "@/lib/supabase";
 import type { Bundle, Product } from "@/lib/types";
+import type { Locale } from "@/lib/i18n/dictionary";
 
-export async function getActiveBundles(): Promise<Bundle[]> {
+async function applyBundleTranslations(
+  supabase: ReturnType<typeof createBrowserSupabaseClient>,
+  bundles: Bundle[],
+  locale: Locale
+): Promise<Bundle[]> {
+  if (locale === "vi" || bundles.length === 0) return bundles;
+
+  const { data: translations, error } = await supabase
+    .from("bundle_translations")
+    .select("bundle_id, name, description")
+    .eq("locale", locale)
+    .in(
+      "bundle_id",
+      bundles.map((b) => b.id)
+    );
+
+  if (error || !translations) return bundles;
+
+  const byId = new Map(translations.map((t) => [t.bundle_id, t]));
+  return bundles.map((b) => {
+    const t = byId.get(b.id);
+    return t ? { ...b, name: t.name, description: t.description } : b;
+  });
+}
+
+export async function getActiveBundles(locale: Locale = "vi"): Promise<Bundle[]> {
   const supabase = createBrowserSupabaseClient();
   const { data, error } = await supabase
     .from("bundles")
@@ -13,10 +39,10 @@ export async function getActiveBundles(): Promise<Bundle[]> {
     console.error("getActiveBundles error:", error.message);
     return [];
   }
-  return data as Bundle[];
+  return applyBundleTranslations(supabase, data as Bundle[], locale);
 }
 
-export async function getBundleBySlug(slug: string): Promise<Bundle | null> {
+export async function getBundleBySlug(slug: string, locale: Locale = "vi"): Promise<Bundle | null> {
   const supabase = createBrowserSupabaseClient();
   const { data, error } = await supabase
     .from("bundles")
@@ -25,15 +51,16 @@ export async function getBundleBySlug(slug: string): Promise<Bundle | null> {
     .eq("is_active", true)
     .maybeSingle();
 
-  if (error) {
-    console.error("getBundleBySlug error:", error.message);
+  if (error || !data) {
+    if (error) console.error("getBundleBySlug error:", error.message);
     return null;
   }
-  return data as Bundle | null;
+  const [translated] = await applyBundleTranslations(supabase, [data as Bundle], locale);
+  return translated;
 }
 
 /** Các combo (đang active) có chứa 1 sản phẩm cụ thể — dùng cho banner cross-sell. */
-export async function getBundlesForProduct(productId: string): Promise<Bundle[]> {
+export async function getBundlesForProduct(productId: string, locale: Locale = "vi"): Promise<Bundle[]> {
   const supabase = createBrowserSupabaseClient();
   const { data, error } = await supabase
     .from("bundles")
@@ -45,13 +72,14 @@ export async function getBundlesForProduct(productId: string): Promise<Bundle[]>
     console.error("getBundlesForProduct error:", error.message);
     return [];
   }
-  return data as Bundle[];
+  return applyBundleTranslations(supabase, data as Bundle[], locale);
 }
 
 /** Lấy danh sách sản phẩm nằm trong 1 bundle, dùng service/browser client tuỳ ngữ cảnh gọi. */
 export async function getProductsByIds(
   supabase: ReturnType<typeof createBrowserSupabaseClient>,
-  ids: string[]
+  ids: string[],
+  locale: Locale = "vi"
 ): Promise<Product[]> {
   if (ids.length === 0) return [];
   const { data, error } = await supabase.from("products").select("*").in("id", ids);
@@ -59,5 +87,17 @@ export async function getProductsByIds(
     console.error("getProductsByIds error:", error.message);
     return [];
   }
-  return data as Product[];
+  if (locale === "vi") return data as Product[];
+
+  const { data: translations } = await supabase
+    .from("product_translations")
+    .select("product_id, name, description")
+    .eq("locale", locale)
+    .in("product_id", ids);
+
+  const byId = new Map((translations ?? []).map((t) => [t.product_id, t]));
+  return (data as Product[]).map((p) => {
+    const t = byId.get(p.id);
+    return t ? { ...p, name: t.name, description: t.description } : p;
+  });
 }

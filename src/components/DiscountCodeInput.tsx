@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatVnd } from "@/lib/types";
+import { getDictionary, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/dictionary";
 
 type Target =
   | { kind: "product"; slug: string }
@@ -11,10 +12,13 @@ type Target =
 export function DiscountCodeInput({
   target,
   onApplied,
+  locale = DEFAULT_LOCALE,
 }: {
   target: Target;
   onApplied: (result: { code: string; discountAmount: number } | null) => void;
+  locale?: Locale;
 }) {
+  const t = getDictionary(locale).checkoutForm;
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,14 +63,14 @@ export function DiscountCodeInput({
     return (
       <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2 text-sm">
         <span className="font-medium text-emerald-700">
-          Đã áp dụng mã <strong>{applied.code}</strong> · -{formatVnd(applied.discountAmount)}
+          {t.applied} <strong>{applied.code}</strong> · -{formatVnd(applied.discountAmount)}
         </span>
         <button
           type="button"
           onClick={handleRemove}
           className="font-medium text-emerald-700 underline hover:text-emerald-900"
         >
-          Bỏ mã
+          {t.removeCode}
         </button>
       </div>
     );
@@ -78,7 +82,7 @@ export function DiscountCodeInput({
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Mã giảm giá (nếu có)"
+          placeholder={t.discountPlaceholder}
           className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
         />
         <button
@@ -87,7 +91,7 @@ export function DiscountCodeInput({
           disabled={loading || !input.trim()}
           className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-ink transition hover:bg-slate-50 disabled:opacity-50"
         >
-          {loading ? "..." : "Áp dụng"}
+          {loading ? "..." : t.apply}
         </button>
       </div>
       {error && <p className="mt-1.5 text-sm text-red-600">{error}</p>}

@@ -1,13 +1,10 @@
-const BADGES = [
-  { icon: "🔒", title: "Thanh toán an toàn", desc: "Chuyển khoản trực tiếp qua VietQR, không lưu thông tin thẻ" },
-  { icon: "⚡", title: "Giao hàng tự động", desc: "Nhận file qua email trong vài giây sau khi xác nhận thanh toán" },
-  { icon: "✉️", title: "Hỗ trợ qua email", desc: "Liên hệ được hỗ trợ nếu link tải gặp sự cố" },
-];
+import { getDictionary, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/dictionary";
 
-export function TrustBadges() {
+export function TrustBadges({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
+  const badges = getDictionary(locale).trustBadges;
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      {BADGES.map((b) => (
+      {badges.map((b) => (
         <div key={b.title} className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3">
           <span className="text-xl">{b.icon}</span>
           <div>

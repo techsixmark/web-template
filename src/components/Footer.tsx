@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/types";
+import { CATEGORY_ORDER, getCategoryLabel } from "@/lib/types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { getLocale } from "@/lib/i18n/locale";
 
 const HOTLINE = process.env.NEXT_PUBLIC_CONTACT_HOTLINE;
 const EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
@@ -8,7 +10,9 @@ const FACEBOOK = process.env.NEXT_PUBLIC_FACEBOOK_URL;
 const INSTAGRAM = process.env.NEXT_PUBLIC_INSTAGRAM_URL;
 const TIKTOK = process.env.NEXT_PUBLIC_TIKTOK_URL;
 
-export function Footer() {
+export async function Footer() {
+  const locale = await getLocale();
+  const t = getDictionary(locale).footer;
   const hasSocial = FACEBOOK || INSTAGRAM || TIKTOK;
   const hasContact = HOTLINE || EMAIL || ADDRESS;
 
@@ -25,10 +29,7 @@ export function Footer() {
                 Template<span className="text-brand-500">Shop</span>
               </span>
             </span>
-            <p className="mt-4 max-w-xs text-sm leading-6 text-slate-400">
-              Template Google Sheets/Excel chuyên nghiệp cho 10 nhóm ngành.
-              Thanh toán chuyển khoản VietQR, giao file tự động qua email.
-            </p>
+            <p className="mt-4 max-w-xs text-sm leading-6 text-slate-400">{t.tagline}</p>
 
             {hasSocial && (
               <div className="mt-4 flex gap-3">
@@ -40,12 +41,12 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white">Nhóm ngành</h3>
+            <h3 className="text-sm font-semibold text-white">{t.industries}</h3>
             <ul className="mt-4 grid grid-cols-1 gap-2 text-sm text-slate-400">
               {CATEGORY_ORDER.slice(0, 5).map((c) => (
                 <li key={c}>
                   <Link href="/san-pham" className="transition hover:text-white">
-                    {CATEGORY_LABELS[c]}
+                    {getCategoryLabel(c, locale)}
                   </Link>
                 </li>
               ))}
@@ -58,7 +59,7 @@ export function Footer() {
               {CATEGORY_ORDER.slice(5).map((c) => (
                 <li key={c}>
                   <Link href="/san-pham" className="transition hover:text-white">
-                    {CATEGORY_LABELS[c]}
+                    {getCategoryLabel(c, locale)}
                   </Link>
                 </li>
               ))}
@@ -66,26 +67,26 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white">Hỗ trợ</h3>
+            <h3 className="text-sm font-semibold text-white">{t.support}</h3>
             <ul className="mt-4 grid grid-cols-1 gap-2 text-sm text-slate-400">
               <li>
                 <Link href="/combo" className="transition hover:text-white">
-                  Combo tiết kiệm
+                  {t.combo}
                 </Link>
               </li>
               <li>
                 <Link href="/chinh-sach" className="transition hover:text-white">
-                  Chính sách bảo mật
+                  {t.privacy}
                 </Link>
               </li>
               <li>
                 <Link href="/chinh-sach#thanh-toan" className="transition hover:text-white">
-                  Chính sách thanh toán
+                  {t.payment}
                 </Link>
               </li>
               <li>
                 <Link href="/chinh-sach#giao-hang" className="transition hover:text-white">
-                  Chính sách giao hàng
+                  {t.shipping}
                 </Link>
               </li>
             </ul>
@@ -94,15 +95,15 @@ export function Footer() {
               <ul className="mt-4 space-y-1.5 text-sm text-slate-400">
                 {HOTLINE && <li>Hotline: {HOTLINE}</li>}
                 {EMAIL && <li>Email: {EMAIL}</li>}
-                {ADDRESS && <li>Địa chỉ: {ADDRESS}</li>}
+                {ADDRESS && <li>{ADDRESS}</li>}
               </ul>
             )}
           </div>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row">
-          <p>© {new Date().getFullYear()} TemplateShop. Đã đăng ký kinh doanh tại Việt Nam.</p>
-          <p>Thanh toán an toàn qua VietQR · Xác nhận &amp; giao hàng tự động</p>
+          <p>© {new Date().getFullYear()} TemplateShop. {t.copyright}</p>
+          <p>{t.secure}</p>
         </div>
       </div>
     </footer>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getActiveBundles } from "@/lib/bundles";
 import { formatVnd } from "@/lib/types";
+import { getLocale } from "@/lib/i18n/locale";
 
 export const revalidate = 60;
 
@@ -10,7 +11,8 @@ export const metadata = {
 };
 
 export default async function BundleListPage() {
-  const bundles = await getActiveBundles();
+  const locale = await getLocale();
+  const bundles = await getActiveBundles(locale);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-12">

@@ -1,10 +1,12 @@
 import { Suspense } from "react";
 import { CartPageClient } from "./CartPageClient";
+import { getLocale } from "@/lib/i18n/locale";
 
-export default function CartPage() {
+export default async function CartPage() {
+  const locale = await getLocale();
   return (
     <Suspense fallback={null}>
-      <CartPageClient />
+      <CartPageClient locale={locale} />
     </Suspense>
   );
 }

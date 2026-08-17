@@ -105,6 +105,39 @@ export const CATEGORY_BG: Record<ProductCategory, string> = {
   "fitness-health": "bg-lime-50",
 };
 
+const CATEGORY_LABELS_EN: Record<ProductCategory, string> = {
+  "personal-finance": "Personal Finance",
+  "accounting-b2b": "Accounting (B2B)",
+  "project-management": "Project Management",
+  "hr-operations": "HR & Operations",
+  "marketing-sales": "Marketing & Sales",
+  "real-estate": "Real Estate",
+  ecommerce: "E-commerce",
+  "event-wedding": "Events & Weddings",
+  "education-coaching": "Education & Coaching",
+  "fitness-health": "Fitness & Health",
+};
+
+const CATEGORY_LABELS_ZH: Record<ProductCategory, string> = {
+  "personal-finance": "个人财务",
+  "accounting-b2b": "企业会计（B2B）",
+  "project-management": "项目管理",
+  "hr-operations": "人力资源与运营",
+  "marketing-sales": "市场与销售",
+  "real-estate": "房地产",
+  ecommerce: "电子商务",
+  "event-wedding": "活动与婚礼",
+  "education-coaching": "教育与培训",
+  "fitness-health": "健康与健身",
+};
+
+/** Nhãn nhóm ngành theo locale — 'vi' dùng CATEGORY_LABELS mặc định. */
+export function getCategoryLabel(category: ProductCategory, locale: "vi" | "en" | "zh"): string {
+  if (locale === "en") return CATEGORY_LABELS_EN[category];
+  if (locale === "zh") return CATEGORY_LABELS_ZH[category];
+  return CATEGORY_LABELS[category];
+}
+
 export const CATEGORY_ORDER: ProductCategory[] = [
   "personal-finance",
   "accounting-b2b",

@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { CATEGORY_BG, CATEGORY_ICONS, CATEGORY_LABELS, type Product } from "@/lib/types";
+import { CATEGORY_BG, CATEGORY_ICONS, getCategoryLabel, type Product } from "@/lib/types";
 import { PriceTag } from "@/components/PriceTag";
+import { getDictionary, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/dictionary";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, locale = DEFAULT_LOCALE }: { product: Product; locale?: Locale }) {
+  const t = getDictionary(locale).catalog;
   const cover = product.preview_images[0];
   const onSale = !!product.compare_at_price && product.compare_at_price > product.price;
   return (
@@ -36,13 +38,13 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <span className="text-xs font-medium uppercase tracking-wide text-brand-600">
-          {CATEGORY_LABELS[product.category]}
+          {getCategoryLabel(product.category, locale)}
         </span>
         <h3 className="font-semibold leading-snug text-ink">{product.name}</h3>
         <div className="mt-auto flex items-center justify-between pt-2">
-          <PriceTag price={product.price} compareAtPrice={product.compare_at_price} />
+          <PriceTag price={product.price} compareAtPrice={product.compare_at_price} freeLabel={t.free} />
           <span className="text-sm font-medium text-brand-600 opacity-0 transition group-hover:opacity-100">
-            Xem chi tiết →
+            {t.viewDetail}
           </span>
         </div>
       </div>

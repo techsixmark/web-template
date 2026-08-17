@@ -3,18 +3,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DiscountCodeInput } from "@/components/DiscountCodeInput";
+import { getDictionary, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/dictionary";
 
 export function CheckoutForm({
   type,
   slug,
   affiliateCode,
   isFree,
+  locale = DEFAULT_LOCALE,
 }: {
   type: "product" | "bundle";
   slug: string;
   affiliateCode?: string;
   isFree?: boolean;
+  locale?: Locale;
 }) {
+  const t = getDictionary(locale).checkoutForm;
   const router = useRouter();
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -55,9 +59,7 @@ export function CheckoutForm({
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700">
-          Họ và tên
-        </label>
+        <label className="block text-sm font-medium text-slate-700">{t.fullName}</label>
         <input
           required
           value={customerName}
@@ -67,9 +69,7 @@ export function CheckoutForm({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">
-          Email nhận file
-        </label>
+        <label className="block text-sm font-medium text-slate-700">{t.email}</label>
         <input
           required
           type="email"
@@ -82,12 +82,9 @@ export function CheckoutForm({
 
       {!isFree && (
         <div>
-          <label className="block text-sm font-medium text-slate-700">Mã giảm giá</label>
+          <label className="block text-sm font-medium text-slate-700">{t.discountCode}</label>
           <div className="mt-1">
-            <DiscountCodeInput
-              target={{ kind: type, slug }}
-              onApplied={setDiscount}
-            />
+            <DiscountCodeInput target={{ kind: type, slug }} onApplied={setDiscount} locale={locale} />
           </div>
         </div>
       )}
@@ -99,11 +96,7 @@ export function CheckoutForm({
         disabled={loading}
         className="w-full rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60"
       >
-        {loading
-          ? "Đang xử lý..."
-          : isFree
-            ? "Nhận file miễn phí"
-            : "Tạo mã thanh toán VietQR"}
+        {loading ? t.processing : isFree ? t.registerFree : t.createQr}
       </button>
     </form>
   );
