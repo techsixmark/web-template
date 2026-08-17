@@ -11,6 +11,8 @@ import { getEmbedUrl, isDirectVideoFile } from "@/lib/video";
 import { ProductCard } from "@/components/ProductCard";
 import { TrustBadges } from "@/components/TrustBadges";
 import { ProductFaq } from "@/components/ProductFaq";
+import { HowItWorks } from "@/components/HowItWorks";
+import { NeedHelp } from "@/components/NeedHelp";
 import { StarRating } from "@/components/StarRating";
 import { ReviewForm } from "@/components/ReviewForm";
 import { getApprovedReviews } from "@/lib/reviews";
@@ -151,14 +153,20 @@ export default async function ProductDetailPage({
             />
           </div>
 
+          {product.description && (
+            <div className="prose-sm mt-5 whitespace-pre-line text-sm leading-relaxed text-slate-600">
+              {product.description}
+            </div>
+          )}
+
           <div className="mt-6 flex flex-wrap gap-3">
+            {!isFree && <AddToCartButton product={product} locale={locale} />}
             <Link
               href={checkoutHref}
               className="inline-flex items-center rounded-full bg-ink px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-700"
             >
               {isFree ? t.downloadFree : t.buyNow}
             </Link>
-            {!isFree && <AddToCartButton product={product} locale={locale} />}
           </div>
 
           <p className="mt-3 text-sm text-slate-500">
@@ -228,15 +236,11 @@ export default async function ProductDetailPage({
         </section>
       )}
 
-      {/* Mô tả chi tiết */}
-      {product.description && (
-        <section className="mt-14 max-w-3xl">
-          <h2 className="text-xl font-bold text-ink">{t.descHeading}</h2>
-          <div className="prose-sm mt-4 whitespace-pre-line leading-relaxed text-slate-600">
-            {product.description}
-          </div>
-        </section>
-      )}
+      {/* Cách hoạt động */}
+      <HowItWorks locale={locale} />
+
+      {/* Cần tư vấn thêm */}
+      <NeedHelp locale={locale} />
 
       {/* Câu hỏi thường gặp */}
       <section className="mt-14 max-w-3xl">

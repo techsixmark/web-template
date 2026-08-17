@@ -106,6 +106,23 @@ const dictionaries = {
       watchVideo: "Xem video hướng dẫn →",
       reviewsCountSuffix: "đánh giá",
     },
+    howItWorks: {
+      heading: "Cách hoạt động",
+      steps: [
+        "Bạn đặt hàng và thanh toán qua VietQR ngay trên website.",
+        "Hệ thống tự động xác nhận giao dịch, không cần chờ admin duyệt.",
+        "Email chứa link tải file được gửi tự động đến bạn.",
+        "Mở link, tạo bản sao (Make a copy) trên Google Sheets và bắt đầu sử dụng.",
+        "Có thắc mắc khi dùng file? Liên hệ để được hỗ trợ.",
+        "Mua 1 lần, dùng mãi mãi — không tính phí theo tháng.",
+      ],
+    },
+    needHelp: {
+      heading: "Cần tư vấn thêm?",
+      text: "Nếu bạn phân vân về thanh toán hoặc cần hỏi thêm, hãy liên hệ để được hỗ trợ.",
+      zaloCta: "Nhắn qua Zalo",
+      emailCta: "Gửi email",
+    },
     trustBadges: [
       { icon: "🔒", title: "Thanh toán an toàn", desc: "Chuyển khoản trực tiếp qua VietQR, không lưu thông tin thẻ" },
       { icon: "⚡", title: "Giao hàng tự động", desc: "Nhận file qua email trong vài giây sau khi xác nhận thanh toán" },
@@ -261,6 +278,23 @@ const dictionaries = {
       watchVideo: "Watch the tutorial video →",
       reviewsCountSuffix: "reviews",
     },
+    howItWorks: {
+      heading: "How it works",
+      steps: [
+        "Place your order and pay via VietQR right on the website.",
+        "The system confirms the transaction automatically — no waiting for admin approval.",
+        "An email with the download link is sent to you automatically.",
+        "Open the link, make a copy in Google Sheets, and start using it.",
+        "Have a question while using the file? Contact us for support.",
+        "Buy once, use forever — no monthly fees.",
+      ],
+    },
+    needHelp: {
+      heading: "Need more help?",
+      text: "If you're unsure about payment or have other questions, reach out and we'll help.",
+      zaloCta: "Message on Zalo",
+      emailCta: "Send an email",
+    },
     trustBadges: [
       { icon: "🔒", title: "Secure payment", desc: "Direct bank transfer via VietQR — no card details stored" },
       { icon: "⚡", title: "Automatic delivery", desc: "Get the file by email within seconds of payment confirmation" },
@@ -410,6 +444,23 @@ const dictionaries = {
       noReviews: "暂无评价，快来抢占第一个吧！",
       watchVideo: "观看教程视频 →",
       reviewsCountSuffix: "条评价",
+    },
+    howItWorks: {
+      heading: "使用流程",
+      steps: [
+        "在网站上下单并通过VietQR付款。",
+        "系统自动确认交易，无需等待人工审核。",
+        "包含下载链接的邮件将自动发送给您。",
+        "打开链接，在Google表格中创建副本即可开始使用。",
+        "使用过程中有疑问？请联系我们获得帮助。",
+        "一次购买，永久使用 —— 无需按月付费。",
+      ],
+    },
+    needHelp: {
+      heading: "需要更多帮助？",
+      text: "如果您对支付有疑问或需要咨询，请联系我们获得帮助。",
+      zaloCta: "通过Zalo联系",
+      emailCta: "发送邮件",
     },
     trustBadges: [
       { icon: "🔒", title: "安全支付", desc: "通过VietQR直接转账，不保存银行卡信息" },
